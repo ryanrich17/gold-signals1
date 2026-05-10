@@ -139,6 +139,10 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
     </button>
   </div>
 
+  <div class="signal-btn-wrap" style="margin-bottom:14px;">
+    <button id="autoBtn" onclick="toggleAuto()" style="width:100%;padding:14px;background:linear-gradient(135deg,#444,#222);color:#888;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;">AUTO SIGNAL: OFF</button>
+  </div>
+
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
     <div class="status-text" id="statusText">Save your API key above then tap Get Signal</div>
@@ -205,6 +209,8 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 var API_KEY="";
 var activeSignal=null;
 var log=[],wins=0,losses=0,totalPips=0;
+var autoTimer=null;
+var AUTO_INTERVAL=1200000; // check every 20 minutes
 
 function saveKey(){
   var k=document.getElementById("apiKeyInput").value.trim();
@@ -220,8 +226,74 @@ function loadKey(){
   API_KEY=localStorage.getItem("td_gold_key")||"";
   if(API_KEY){
     document.getElementById("apiOk").style.display="block";
-    setStatus("API key ready — tap Get Signal","#00c853");
+    setStatus("API key ready — tap Get Signal or enable Auto","#00c853");
   }
+}
+
+function toggleAuto(){
+  var btn=document.getElementById("autoBtn");
+  if(autoTimer){
+    clearInterval(autoTimer);
+    autoTimer=null;
+    btn.textContent="AUTO SIGNAL: OFF";
+    btn.style.background="linear-gradient(135deg,#444,#222)";
+    btn.style.color="#888";
+    setStatus("Auto signals off","#555");
+  } else {
+    if(!API_KEY){alert("Save your API key first.");return;}
+    btn.textContent="AUTO SIGNAL: ON ✓";
+    btn.style.background="linear-gradient(135deg,#00c853,#007733)";
+    btn.style.color="#fff";
+    setStatus("Auto mode on — checking every 20 mins for strong signals","#00c853");
+    autoCheck();
+    autoTimer=setInterval(autoCheck, AUTO_INTERVAL);
+  }
+}
+
+async function autoCheck(){
+  if(!API_KEY) return;
+  try{
+    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&apikey="+API_KEY;
+    var resp=await fetch(url);
+    var data=await resp.json();
+    if(data.status==="error"||!data.values||!data.values.length) return;
+    var candles=data.values.reverse();
+    var closes=candles.map(function(c){return parseFloat(c.close);});
+    var highs=candles.map(function(c){return parseFloat(c.high);});
+    var lows=candles.map(function(c){return parseFloat(c.low);});
+    var cur=closes[closes.length-1];
+    // Only fire signal automatically if strength would be STRONG (78%+)
+    var result=calcSignalStrength(closes,highs,lows,cur);
+    if(result.strength>=78){
+      setStatus("★ Strong signal detected — auto firing!","#00c853");
+      document.getElementById("statusPrice").textContent="$"+cur.toFixed(2);
+      document.getElementById("indBar").style.display="grid";
+      buildSignal(closes,highs,lows,cur);
+      // Vibrate if supported
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    } else {
+      setStatus("Auto check: "+new Date().toLocaleTimeString()+" — strength "+result.strength+"%, waiting for strong setup","#FFD700");
+    }
+  }catch(e){}
+}
+
+function calcSignalStrength(closes,highs,lows,cur){
+  var e9=calcEMA(closes,9),e21=calcEMA(closes,21);
+  var rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes);
+  var hour=new Date().getHours();
+  var bull=0,bear=0;
+  if(e9>e21&&cur>e9) bull+=22; else if(e9<e21&&cur<e9) bear+=22; else if(e9>e21) bull+=10; else bear+=10;
+  if(rsi>70) bear+=20; else if(rsi<30) bull+=20; else if(rsi>=55&&rsi<=70) bull+=12; else if(rsi>=30&&rsi<=45) bear+=12;
+  if(macd.crossedUp) bull+=18; else if(macd.crossedDn) bear+=18; else if(macd.aboveZero&&macd.hist>0) bull+=10; else if(!macd.aboveZero&&macd.hist<0) bear+=10;
+  var n100=Math.round(cur/100)*100,d100=cur-n100;
+  if(Math.abs(d100)<atr*1.2){if(d100>0&&d100<atr*0.7) bear+=12; else if(d100<0&&Math.abs(d100)<atr*0.7) bull+=12;}
+  var ext=((cur-e21)/e21*100);
+  if(ext>0.5) bear+=10; else if(ext<-0.5) bull+=10;
+  if(hour>=8&&hour<12){bull+=3;bear+=3;} else if(hour>=12&&hour<13){bull+=5;bear+=5;} else if(hour>=13&&hour<17){bull+=3;bear+=3;}
+  var diff=bull-bear,strength;
+  if(Math.abs(diff)<6) strength=35+Math.abs(diff);
+  else strength=Math.min(95,48+Math.abs(diff)*1.1);
+  return{strength:Math.round(strength),dir:diff>=0?"BUY":"SELL"};
 }
 
 async function getSignal(){
@@ -330,10 +402,10 @@ function buildSignal(closes,highs,lows,cur){
 
   var sl=strength>=78?"STRONG":strength>=58?"MODERATE":"WEAK";
   var sc=strength>=78?"#00c853":strength>=58?"#FFD700":"#ff4444";
-  var slD=parseFloat((atr*1.2).toFixed(2));
-  var tp1D=parseFloat((atr*1.0).toFixed(2));
-  var tp2D=parseFloat((atr*2.0).toFixed(2));
-  var tp3D=parseFloat((atr*3.5).toFixed(2));
+  var slD=parseFloat((atr*2.0).toFixed(2));
+  var tp1D=parseFloat((atr*1.5).toFixed(2));
+  var tp2D=parseFloat((atr*3.0).toFixed(2));
+  var tp3D=parseFloat((atr*5.0).toFixed(2));
   var entry=cur,tp1,tp2,tp3,stopL;
   if(dir==="BUY"){tp1=(entry+tp1D).toFixed(2);tp2=(entry+tp2D).toFixed(2);tp3=(entry+tp3D).toFixed(2);stopL=(entry-slD).toFixed(2);}
   else{tp1=(entry-tp1D).toFixed(2);tp2=(entry-tp2D).toFixed(2);tp3=(entry-tp3D).toFixed(2);stopL=(entry+slD).toFixed(2);}
