@@ -250,8 +250,19 @@ var log=[],wins=0,losses=0,totalPnl=0;
 var autoTimer=null;
 var AUTO_INTERVAL=1200000;
 
-// Fixed intraday levels for XAU/USD — wide enough for real moves
-var TP1=80, TP2=160, TP3=300, SL=50;
+// TP/SL scale dynamically with signal strength
+function getLevels(strength){
+  if(strength>=85){
+    // STRONG — wide targets, confident move expected
+    return{tp1:80,tp2:160,tp3:300,sl:50};
+  } else if(strength>=70){
+    // MODERATE — medium targets
+    return{tp1:50,tp2:100,tp3:180,sl:40};
+  } else {
+    // WEAK — tight targets, less conviction
+    return{tp1:25,tp2:55,tp3:100,sl:30};
+  }
+}
 
 function saveKey(){
   var k=document.getElementById("apiKeyInput").value.trim();
@@ -439,20 +450,24 @@ function buildSignal(closes,highs,lows,cur){
   if(dir==="BUY"){tp1=(entry+TP1).toFixed(2);tp2=(entry+TP2).toFixed(2);tp3=(entry+TP3).toFixed(2);stopL=(entry-SL).toFixed(2);}
   else{tp1=(entry-TP1).toFixed(2);tp2=(entry-TP2).toFixed(2);tp3=(entry-TP3).toFixed(2);stopL=(entry+SL).toFixed(2);}
 
-  // PU Prime gold CFD: 0.01 lot = $0.01 per $1 move × 100oz = $1 per $1 move per 0.01 lot
+  var levels=getLevels(strength);
+  var TP1=levels.tp1,TP2=levels.tp2,TP3=levels.tp3,SL=levels.sl;
+
+  // PU Prime gold CFD — halved and converted to GBP (approx 0.79 rate)
   var lot=parseFloat(document.getElementById("lotSize").value)||0.01;
-  var perDollar=lot*100; // $1 price move profit in USD
-  var tp1P=(TP1*perDollar).toFixed(2);
-  var tp2P=(TP2*perDollar).toFixed(2);
-  var tp3P=(TP3*perDollar).toFixed(2);
-  var slP =(SL*perDollar).toFixed(2);
+  var perDollar=lot*100;
+  var gbpRate=0.79;
+  var tp1P=((TP1*perDollar)/2*gbpRate).toFixed(2);
+  var tp2P=((TP2*perDollar)/2*gbpRate).toFixed(2);
+  var tp3P=((TP3*perDollar)/2*gbpRate).toFixed(2);
+  var slP =((SL*perDollar)/2*gbpRate).toFixed(2);
 
   activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),tp1P:tp1P,tp2P:tp2P,tp3P:tp3P,slP:slP,lot:lot,strength:strength,strengthLabel:sl,candles:closes.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
 
   // Telegram — strong signals only
   if(strength>=78){
     var emoji=dir==="BUY"?"🟢":"🔴";
-    sendTelegram(emoji+" <b>"+dir+" — XAU/USD GOLD</b>\nStrength: <b>"+sl+" ("+strength+"%)</b>\n\n💰 Entry: <b>$"+entry.toFixed(2)+"</b>\n🎯 TP1: <b>$"+tp1+"</b> (+$"+TP1+" · profit $"+tp1P+")\n🎯 TP2: <b>$"+tp2+"</b> (+$"+TP2+" · profit $"+tp2P+")\n🎯 TP3: <b>$"+tp3+"</b> (+$"+TP3+" · profit $"+tp3P+")\n🛑 Stop Loss: <b>$"+stopL+"</b> (-$"+SL+" · loss $"+slP+")\n\nLot: "+lot+" · EMA9: $"+e9+" · RSI: "+rsi+"\n📊 "+closes.length+" real 15-min candles");
+    sendTelegram(emoji+" <b>"+dir+" — XAU/USD GOLD</b>\nStrength: <b>"+sl+" ("+strength+"%)</b>\n\n💰 Entry: <b>$"+entry.toFixed(2)+"</b>\n🎯 TP1: <b>$"+tp1+"</b> (+$"+TP1+" · £"+tp1P+")\n🎯 TP2: <b>$"+tp2+"</b> (+$"+TP2+" · £"+tp2P+")\n🎯 TP3: <b>$"+tp3+"</b> (+$"+TP3+" · £"+tp3P+")\n🛑 Stop Loss: <b>$"+stopL+"</b> (-$"+SL+" · £"+slP+")\n\nLot: "+lot+" · EMA9: $"+e9+" · RSI: "+rsi+"\n📊 "+closes.length+" real 15-min candles");
   }
 
   // Render
