@@ -487,19 +487,21 @@ function buildSignal(closes,highs,lows,cur){
 
   activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),tp1D:tp1D,tp2D:tp2D,tp3D:tp3D,slD:slD,strength:strength,strengthLabel:sl,candles:closes.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
 
-  // Send Telegram
-  var emoji=dir==="BUY"?"🟢":"🔴";
-  var tgMsg=emoji+" <b>"+dir+" — XAU/USD GOLD</b>\n"
-    +"Strength: <b>"+sl+" ("+strength+"%)</b>\n\n"
-    +"💰 Entry: <b>$"+entry.toFixed(2)+"</b>\n"
-    +"🎯 TP1: <b>$"+tp1+"</b> (+"+tp1D+" pts)\n"
-    +"🎯 TP2: <b>$"+tp2+"</b> (+"+tp2D+" pts)\n"
-    +"🎯 TP3: <b>$"+tp3+"</b> (+"+tp3D+" pts)\n"
-    +"🛑 Stop Loss: <b>$"+stopL+"</b> (-"+slD+" pts)\n\n"
-    +"EMA9: $"+e9+" · EMA21: $"+e21+"\n"
-    +"RSI: "+rsi+" · ATR: $"+atr+"\n"
-    +"📊 Based on "+closes.length+" real 15-min candles";
-  sendTelegram(tgMsg);
+  // Only send Telegram alert for STRONG signals
+  if(strength>=78){
+    var emoji=dir==="BUY"?"🟢":"🔴";
+    var tgMsg=emoji+" <b>"+dir+" — XAU/USD GOLD</b>\n"
+      +"Strength: <b>"+sl+" ("+strength+"%)</b>\n\n"
+      +"💰 Entry: <b>$"+entry.toFixed(2)+"</b>\n"
+      +"🎯 TP1: <b>$"+tp1+"</b> (+"+tp1D+" pts)\n"
+      +"🎯 TP2: <b>$"+tp2+"</b> (+"+tp2D+" pts)\n"
+      +"🎯 TP3: <b>$"+tp3+"</b> (+"+tp3D+" pts)\n"
+      +"🛑 Stop Loss: <b>$"+stopL+"</b> (-"+slD+" pts)\n\n"
+      +"EMA9: $"+e9+" · EMA21: $"+e21+"\n"
+      +"RSI: "+rsi+" · ATR: $"+atr+"\n"
+      +"📊 Based on "+closes.length+" real 15-min candles";
+    sendTelegram(tgMsg);
+  }
 
   // Render
   var vEl=document.getElementById("verdict");
