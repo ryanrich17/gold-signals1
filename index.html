@@ -519,7 +519,7 @@ function closeSignal(result){
   totalPnl+=pnl;
   for(var i=0;i<log.length;i++){if(log[i].id===activeSignal.id){log[i]=JSON.parse(JSON.stringify(activeSignal));break;}}
   var emoji=result==="WIN"?"&#9989;":"&#10060;";
-  sendTelegram(emoji+" <b>TRADE "+result+"</b> — XAU/USD\n"+activeSignal.dir+" | Entry: $"+activeSignal.entry.toFixed(2)+" Exit: $"+exitVal.toFixed(2)+"\nMove: "+(move>=0?"+":"")+move.toFixed(2)+" pts | P&L: <b>"+(pnl>=0?"+":"-")+"&#163;"+Math.abs(pnl).toFixed(2)+"</b>");
+  sendTelegram(emoji+" <b>TRADE "+result+"</b> — XAU/USD\n"+activeSignal.dir+" | Entry: $"+activeSignal.entry.toFixed(2)+" Exit: $"+exitVal.toFixed(2)+"\nMove: "+(move>=0?"+":"")+move.toFixed(2)+" pts | P&L: <b>"+(pnl>=0?"+":"-")+"£"+Math.abs(pnl).toFixed(2)+"</b>");
   updateStats();renderLog();
   document.getElementById("verdict").style.display="none";
   activeSignal=null;
@@ -537,7 +537,7 @@ function renderLog(){
     var pnl="";
     if(s.status!=="OPEN"){
       var pc=s.pnl>=0?"#00c853":"#ff4444";
-      pnl="<div class='log-pnl' style='color:"+pc+"'>"+(s.pnl>=0?"+":"-")+"&#163;"+Math.abs(s.pnl).toFixed(2)+" | exit $"+s.exitPrice.toFixed(2)+"</div>";
+      pnl="<div class='log-pnl' style='color:"+pc+"'>"+(s.pnl>=0?"+":"-")+"£"+Math.abs(s.pnl).toFixed(2)+" | exit $"+s.exitPrice.toFixed(2)+"</div>";
     }
     return "<div class='log-item "+sc2+"'>"
       +"<div class='log-row1'>"
@@ -567,7 +567,7 @@ function updateStats(){
   document.getElementById("statLoss").textContent=losses;
   document.getElementById("statRate").textContent=total>0?Math.round(wins/total*100)+"%":"--";
   var pEl=document.getElementById("statPnl");
-  pEl.textContent=(totalPnl>=0?"+":"-")+"&#163;"+Math.abs(totalPnl).toFixed(2);
+  pEl.textContent=(totalPnl>=0?"+":"-")+"£"+Math.abs(totalPnl).toFixed(2);
   pEl.style.color=totalPnl>=0?"#00c853":"#ff4444";
 }
 
