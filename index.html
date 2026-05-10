@@ -15,16 +15,18 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 .api-setup{background:#1a1a00;border:2px solid #FFD700;border-radius:14px;padding:18px;margin-bottom:14px;}
 .api-title{font-size:13px;color:#FFD700;font-weight:700;margin-bottom:6px;}
 .api-sub{font-size:11px;color:#888;margin-bottom:12px;line-height:1.6;}
-.api-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.api-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px;}
 .api-row input{background:#0a0e00;border:1px solid #FFD70066;color:#FFD700;padding:10px 14px;border-radius:9px;font-size:13px;flex:1;min-width:180px;}
 .api-row input:focus{outline:none;border-color:#FFD700;}
 .btn-save{background:linear-gradient(135deg,#FFD700,#cc9900);color:#000;border:none;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;}
 .api-ok{display:none;background:#00c85311;border:1px solid #00c85333;border-radius:8px;padding:8px 12px;margin-top:10px;font-size:12px;color:#00c853;}
-.signal-btn-wrap{margin-bottom:14px;}
+.signal-btn-wrap{margin-bottom:10px;}
 .btn-get-signal{width:100%;padding:18px;background:linear-gradient(135deg,#FFD700,#cc9900);color:#000;border:none;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:10px;}
 .btn-get-signal:disabled{background:#2a2a00;color:#555;cursor:not-allowed;}
 .spinner{display:none;width:18px;height:18px;border:3px solid #00000033;border-top:3px solid #000;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+.btn-auto-wrap{margin-bottom:14px;}
+#autoBtn{width:100%;padding:14px;background:linear-gradient(135deg,#444,#222);color:#888;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;}
 .status-bar{background:#1a1a00;border:1px solid #FFD70022;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;flex-wrap:wrap;}
 .status-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;}
 .status-text{color:#aaa;flex:1;}
@@ -115,14 +117,16 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <header>
   <div>
     <h1>GOLD SIGNALS — XAU/USD</h1>
-    <div class="sub">Live data · one tap = full analysis</div>
+    <div class="sub">Live data · Telegram alerts · Auto signals</div>
   </div>
 </header>
 <div class="container">
 
+  <!-- TWELVE DATA API KEY -->
+
   <div class="api-setup">
     <div class="api-title">🔑 Twelve Data API Key</div>
-    <div class="api-sub">Free at <b>twelvedata.com</b> — sign up, copy your key, paste below.<br>Saved on this device only.</div>
+    <div class="api-sub">Free at <b>twelvedata.com</b> — sign up, copy your key, paste below. Saved on this device only.</div>
     <div class="api-row">
       <input id="apiKeyInput" type="password" placeholder="Paste your API key here">
       <button class="btn-save" onclick="saveKey()">Save</button>
@@ -130,21 +134,27 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
     <div class="api-ok" id="apiOk">✓ API key saved — tap Get Signal below</div>
   </div>
 
+  <!-- TELEGRAM SETUP -->
+
   <div class="api-setup" style="border-color:#00bcd4;margin-bottom:14px;">
-    <div class="api-title" style="color:#00bcd4;">📲 Telegram Alerts (optional)</div>
-    <div class="api-sub">Get notified on your phone when a strong signal fires — even when the app is closed.<br>1. Open Telegram → search <b>@BotFather</b> → /newbot → copy your token<br>2. Search <b>@userinfobot</b> → /start → copy your Chat ID</div>
-    <div class="api-row" style="margin-bottom:8px;">
-      <input id="tgTokenInput" type="password" placeholder="Telegram Bot Token" style="border-color:#00bcd466;">
+    <div class="api-title" style="color:#00bcd4;">📲 Telegram Alerts</div>
+    <div class="api-sub">Get notified on your phone when a strong signal fires — even when the app is closed.<br>
+    1. Telegram → search <b>@BotFather</b> → /newbot → copy token<br>
+    2. Search <b>@userinfobot</b> → Start → copy your Chat ID</div>
+    <div class="api-row">
+      <input id="tgTokenInput" type="password" placeholder="Bot Token" style="border-color:#00bcd466;">
       <button class="btn-save" onclick="saveTg()" style="background:linear-gradient(135deg,#00bcd4,#006080);">Save</button>
     </div>
     <div class="api-row">
-      <input id="tgChatInput" type="text" placeholder="Your Chat ID (e.g. 123456789)" style="border-color:#00bcd466;">
-      <button class="btn-save" onclick="testTg()" style="background:#1a1a00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
+      <input id="tgChatInput" type="text" placeholder="Chat ID (e.g. 6753014234)" style="border-color:#00bcd466;">
+      <button class="btn-save" onclick="testTg()" style="background:#0a0e00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
     </div>
-    <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">✓ Telegram configured — you'll get alerts for strong signals</div>
+    <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">✓ Telegram ready — you'll get alerts for every signal</div>
   </div>
 
   <div class="err-box" id="errBox"></div>
+
+  <!-- SIGNAL BUTTONS -->
 
   <div class="signal-btn-wrap">
     <button class="btn-get-signal" id="signalBtn" onclick="getSignal()">
@@ -152,10 +162,11 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
       <span id="signalBtnText">GET GOLD SIGNAL</span>
     </button>
   </div>
-
-  <div class="signal-btn-wrap" style="margin-bottom:14px;">
-    <button id="autoBtn" onclick="toggleAuto()" style="width:100%;padding:14px;background:linear-gradient(135deg,#444,#222);color:#888;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;">AUTO SIGNAL: OFF</button>
+  <div class="btn-auto-wrap">
+    <button id="autoBtn" onclick="toggleAuto()">AUTO SIGNAL: OFF</button>
   </div>
+
+  <!-- STATUS -->
 
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
@@ -163,12 +174,16 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
     <div class="status-price" id="statusPrice"></div>
   </div>
 
+  <!-- INDICATORS -->
+
   <div class="ind-bar" id="indBar">
     <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="ema9d">--</div><div class="is">Short</div></div>
     <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="ema21d">--</div><div class="is">Mid</div></div>
     <div class="ind-box"><div class="il">RSI 14</div><div class="iv" id="rsid">--</div><div class="is">Momentum</div></div>
     <div class="ind-box"><div class="il">ATR 14</div><div class="iv" id="atrd">--</div><div class="is">Volatility</div></div>
   </div>
+
+  <!-- VERDICT -->
 
   <div class="verdict" id="verdict">
     <div class="verdict-direction" id="verdictDir">--</div>
@@ -204,12 +219,16 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
     </div>
   </div>
 
+  <!-- STATS -->
+
   <div class="stats-bar">
     <div class="stat-box wins"><div class="sl4">WINS</div><div class="sv" id="statWins">0</div></div>
     <div class="stat-box loss"><div class="sl4">LOSSES</div><div class="sv" id="statLoss">0</div></div>
     <div class="stat-box rate"><div class="sl4">WIN RATE</div><div class="sv" id="statRate">--</div></div>
     <div class="stat-box pnl"><div class="sl4">TOTAL PTS</div><div class="sv" id="statPips">0</div></div>
   </div>
+
+  <!-- LOG -->
 
   <div class="log-wrap">
     <div class="log-title">Signal Log <button class="btn-clr" onclick="clearLog()">Clear</button></div>
@@ -220,24 +239,14 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <div class="footer">XAU/USD — Educational only. Not financial advice.</div>
 
 <script>
-var API_KEY="";
-var TG_TOKEN="";
-var TG_CHAT="";
+// ── STATE ─────────────────────────────────────────────────
+var API_KEY="", TG_TOKEN="", TG_CHAT="";
 var activeSignal=null;
 var log=[],wins=0,losses=0,totalPips=0;
 var autoTimer=null;
-var AUTO_INTERVAL=1200000;
+var AUTO_INTERVAL=1200000; // 20 minutes
 
-function saveKey(){
-  var k=document.getElementById("apiKeyInput").value.trim();
-  if(!k){alert("Paste your Twelve Data API key first.");return;}
-  localStorage.setItem("td_gold_key",k);
-  API_KEY=k;
-  document.getElementById("apiKeyInput").value="";
-  document.getElementById("apiOk").style.display="block";
-  setStatus("API key saved — tap Get Signal","#00c853");
-}
-
+// ── SAVE / LOAD KEYS ─────────────────────────────────────
 function saveKey(){
   var k=document.getElementById("apiKeyInput").value.trim();
   if(!k){alert("Paste your Twelve Data API key first.");return;}
@@ -251,119 +260,87 @@ function saveKey(){
 function saveTg(){
   var t=document.getElementById("tgTokenInput").value.trim();
   var c=document.getElementById("tgChatInput").value.trim();
-  if(!t||!c){alert("Enter both your Bot Token and Chat ID.");return;}
-  localStorage.setItem("td_tg_token",t);
-  localStorage.setItem("td_tg_chat",c);
-  TG_TOKEN=t; TG_CHAT=c;
-  document.getElementById("tgTokenInput").value="";
+  if(!t&&!c){alert("Enter your Bot Token and Chat ID.");return;}
+  if(t){localStorage.setItem("td_tg_token",t);TG_TOKEN=t;document.getElementById("tgTokenInput").value="";}
+  if(c){localStorage.setItem("td_tg_chat",c);TG_CHAT=c;}
   document.getElementById("tgOk").style.display="block";
 }
 
 async function testTg(){
-  var t=localStorage.getItem("td_tg_token")||TG_TOKEN;
-  var c=localStorage.getItem("td_tg_chat")||TG_CHAT;
-  if(!t||!c){alert("Save your Telegram token and chat ID first.");return;}
+  var t=TG_TOKEN||localStorage.getItem("td_tg_token");
+  var c=TG_CHAT||localStorage.getItem("td_tg_chat");
+  if(!t||!c){alert("Save your Bot Token and Chat ID first.");return;}
   try{
     var r=await fetch("https://api.telegram.org/bot"+t+"/sendMessage",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({chat_id:c,text:"✅ Gold Signals — Telegram connected! You'll receive strong signal alerts here."})
+      body:JSON.stringify({chat_id:c,text:"✅ Gold Signals connected! You will receive BUY/SELL alerts here."})
     });
     var d=await r.json();
-    if(d.ok){alert("✓ Telegram working! Check your messages.");}
-    else{alert("Failed: "+d.description);}
+    alert(d.ok?"✓ Telegram working! Check your messages.":"Failed: "+d.description);
   }catch(e){alert("Error: "+e.message);}
 }
 
 function sendTelegram(msg){
   var t=TG_TOKEN||localStorage.getItem("td_tg_token");
   var c=TG_CHAT||localStorage.getItem("td_tg_chat");
-  if(!t||!c) return;
-  try{
-    fetch("https://api.telegram.org/bot"+t+"/sendMessage",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({chat_id:c,text:msg,parse_mode:"HTML"})
-    });
-  }catch(e){}
+  if(!t||!c)return;
+  try{fetch("https://api.telegram.org/bot"+t+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:msg,parse_mode:"HTML"})});}catch(e){}
 }
 
 function loadKey(){
   API_KEY=localStorage.getItem("td_gold_key")||"";
   TG_TOKEN=localStorage.getItem("td_tg_token")||"";
   TG_CHAT=localStorage.getItem("td_tg_chat")||"";
-  if(API_KEY){
-    document.getElementById("apiOk").style.display="block";
-    setStatus("API key ready — tap Get Signal or enable Auto","#00c853");
-  }
-  if(TG_TOKEN&&TG_CHAT){
-    document.getElementById("tgOk").style.display="block";
-  }
+  if(API_KEY){document.getElementById("apiOk").style.display="block";setStatus("API key ready — tap Get Signal or enable Auto","#00c853");}
+  if(TG_TOKEN&&TG_CHAT){document.getElementById("tgOk").style.display="block";}
 }
 
+// ── AUTO SIGNAL ───────────────────────────────────────────
 function toggleAuto(){
   var btn=document.getElementById("autoBtn");
   if(autoTimer){
-    clearInterval(autoTimer);
-    autoTimer=null;
+    clearInterval(autoTimer);autoTimer=null;
     btn.textContent="AUTO SIGNAL: OFF";
     btn.style.background="linear-gradient(135deg,#444,#222)";
     btn.style.color="#888";
     setStatus("Auto signals off","#555");
-  } else {
+  }else{
     if(!API_KEY){alert("Save your API key first.");return;}
     btn.textContent="AUTO SIGNAL: ON ✓";
     btn.style.background="linear-gradient(135deg,#00c853,#007733)";
     btn.style.color="#fff";
-    setStatus("Auto mode on — checking every 20 mins for strong signals","#00c853");
+    setStatus("Auto on — checking every 20 mins for strong signals","#00c853");
     autoCheck();
-    autoTimer=setInterval(autoCheck, AUTO_INTERVAL);
+    autoTimer=setInterval(autoCheck,AUTO_INTERVAL);
   }
 }
 
 async function autoCheck(){
-  if(!API_KEY) return;
+  if(!API_KEY)return;
   try{
     var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&apikey="+API_KEY;
     var resp=await fetch(url);
     var data=await resp.json();
-    if(data.status==="error"||!data.values||!data.values.length) return;
+    if(data.status==="error"||!data.values||!data.values.length)return;
     var candles=data.values.reverse();
     var closes=candles.map(function(c){return parseFloat(c.close);});
     var highs=candles.map(function(c){return parseFloat(c.high);});
     var lows=candles.map(function(c){return parseFloat(c.low);});
     var cur=closes[closes.length-1];
-    // Only fire signal automatically if strength would be STRONG (78%+)
-    var result=calcSignalStrength(closes,highs,lows,cur);
+    var result=calcStrength(closes,highs,lows,cur);
     if(result.strength>=78){
-      setStatus("★ Strong signal detected — auto firing!","#00c853");
+      setStatus("★ Strong signal detected — firing!","#00c853");
       document.getElementById("statusPrice").textContent="$"+cur.toFixed(2);
       document.getElementById("indBar").style.display="grid";
       buildSignal(closes,highs,lows,cur);
-      if(navigator.vibrate) navigator.vibrate([200,100,200]);
-    } else {
-      setStatus("Auto check: "+new Date().toLocaleTimeString()+" — strength "+result.strength+"%, waiting for strong setup","#FFD700");
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    }else{
+      setStatus("Auto check "+new Date().toLocaleTimeString()+" — strength "+result.strength+"% waiting for strong setup","#FFD700");
     }
   }catch(e){}
 }
 
-function calcSignalStrength(closes,highs,lows,cur){
-  var e9=calcEMA(closes,9),e21=calcEMA(closes,21);
-  var rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes);
-  var hour=new Date().getHours();
-  var bull=0,bear=0;
-  if(e9>e21&&cur>e9) bull+=22; else if(e9<e21&&cur<e9) bear+=22; else if(e9>e21) bull+=10; else bear+=10;
-  if(rsi>70) bear+=20; else if(rsi<30) bull+=20; else if(rsi>=55&&rsi<=70) bull+=12; else if(rsi>=30&&rsi<=45) bear+=12;
-  if(macd.crossedUp) bull+=18; else if(macd.crossedDn) bear+=18; else if(macd.aboveZero&&macd.hist>0) bull+=10; else if(!macd.aboveZero&&macd.hist<0) bear+=10;
-  var n100=Math.round(cur/100)*100,d100=cur-n100;
-  if(Math.abs(d100)<atr*1.2){if(d100>0&&d100<atr*0.7) bear+=12; else if(d100<0&&Math.abs(d100)<atr*0.7) bull+=12;}
-  var ext=((cur-e21)/e21*100);
-  if(ext>0.5) bear+=10; else if(ext<-0.5) bull+=10;
-  if(hour>=8&&hour<12){bull+=3;bear+=3;} else if(hour>=12&&hour<13){bull+=5;bear+=5;} else if(hour>=13&&hour<17){bull+=3;bear+=3;}
-  var diff=bull-bear,strength;
-  if(Math.abs(diff)<6) strength=35+Math.abs(diff);
-  else strength=Math.min(95,48+Math.abs(diff)*1.1);
-  return{strength:Math.round(strength),dir:diff>=0?"BUY":"SELL"};
-}
-
+// ── MAIN FETCH ────────────────────────────────────────────
 async function getSignal(){
   if(!API_KEY){alert("Save your Twelve Data API key first.");return;}
   setBusy(true);hideErr();
@@ -388,6 +365,7 @@ async function getSignal(){
   setBusy(false);
 }
 
+// ── MATHS ─────────────────────────────────────────────────
 function calcEMA(arr,p){
   if(arr.length<p)p=arr.length;
   var k=2/(p+1),e=arr[0];
@@ -413,10 +391,31 @@ function calcMACD(arr){
   return{macd:ml,signal:parseFloat(sig.toFixed(2)),hist:parseFloat((ml-sig).toFixed(2)),crossedUp:pm<=0&&ml>0,crossedDn:pm>=0&&ml<0,aboveZero:ml>0};
 }
 
+function calcStrength(closes,highs,lows,cur){
+  var e9=calcEMA(closes,9),e21=calcEMA(closes,21);
+  var rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes);
+  var hour=new Date().getHours();
+  var bull=0,bear=0;
+  if(e9>e21&&cur>e9)bull+=22;else if(e9<e21&&cur<e9)bear+=22;else if(e9>e21)bull+=10;else bear+=10;
+  if(rsi>70)bear+=20;else if(rsi<30)bull+=20;else if(rsi>=55&&rsi<=70)bull+=12;else if(rsi>=30&&rsi<=45)bear+=12;
+  if(macd.crossedUp)bull+=18;else if(macd.crossedDn)bear+=18;else if(macd.aboveZero&&macd.hist>0)bull+=10;else if(!macd.aboveZero&&macd.hist<0)bear+=10;
+  var n100=Math.round(cur/100)*100,d100=cur-n100;
+  if(Math.abs(d100)<atr*1.2){if(d100>0&&d100<atr*0.7)bear+=12;else if(d100<0&&Math.abs(d100)<atr*0.7)bull+=12;}
+  var ext=((cur-e21)/e21*100);
+  if(ext>0.5)bear+=10;else if(ext<-0.5)bull+=10;
+  if(hour>=8&&hour<12){bull+=3;bear+=3;}else if(hour>=12&&hour<13){bull+=5;bear+=5;}else if(hour>=13&&hour<17){bull+=3;bear+=3;}
+  var diff=bull-bear,strength;
+  if(Math.abs(diff)<6)strength=35+Math.abs(diff);
+  else strength=Math.min(95,48+Math.abs(diff)*1.1);
+  return{strength:Math.round(strength),dir:diff>=0?"BUY":"SELL"};
+}
+
+// ── BUILD SIGNAL ──────────────────────────────────────────
 function buildSignal(closes,highs,lows,cur){
   var e9=calcEMA(closes,9),e21=calcEMA(closes,21);
   var rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes);
   var hour=new Date().getHours();
+
   setInd("ema9d","$"+e9,e9<cur?"#00c853":"#ff4444");
   setInd("ema21d","$"+e21,e21<cur?"#00c853":"#ff4444");
   setInd("rsid",rsi,rsi>70?"#ff4444":rsi<30?"#00c853":"#FFD700");
@@ -470,30 +469,33 @@ function buildSignal(closes,highs,lows,cur){
 
   var sl=strength>=78?"STRONG":strength>=58?"MODERATE":"WEAK";
   var sc=strength>=78?"#00c853":strength>=58?"#FFD700":"#ff4444";
+
   var slD=parseFloat((atr*2.0).toFixed(2));
   var tp1D=parseFloat((atr*1.5).toFixed(2));
   var tp2D=parseFloat((atr*3.0).toFixed(2));
   var tp3D=parseFloat((atr*5.0).toFixed(2));
+
   var entry=cur,tp1,tp2,tp3,stopL;
   if(dir==="BUY"){tp1=(entry+tp1D).toFixed(2);tp2=(entry+tp2D).toFixed(2);tp3=(entry+tp3D).toFixed(2);stopL=(entry-slD).toFixed(2);}
   else{tp1=(entry-tp1D).toFixed(2);tp2=(entry-tp2D).toFixed(2);tp3=(entry-tp3D).toFixed(2);stopL=(entry+slD).toFixed(2);}
 
   activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),tp1D:tp1D,tp2D:tp2D,tp3D:tp3D,slD:slD,strength:strength,strengthLabel:sl,candles:closes.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
 
-  // Send Telegram alert
+  // Send Telegram
   var emoji=dir==="BUY"?"🟢":"🔴";
-  var tgMsg=emoji+" <b>"+dir+" SIGNAL — XAU/USD (GOLD)</b>\n"
+  var tgMsg=emoji+" <b>"+dir+" — XAU/USD GOLD</b>\n"
     +"Strength: <b>"+sl+" ("+strength+"%)</b>\n\n"
-    +"Entry: <b>$"+entry.toFixed(2)+"</b>\n"
-    +"TP1: <b>$"+tp1+"</b> (+"+tp1D+" pts)\n"
-    +"TP2: <b>$"+tp2+"</b> (+"+tp2D+" pts)\n"
-    +"TP3: <b>$"+tp3+"</b> (+"+tp3D+" pts)\n"
-    +"Stop Loss: <b>$"+stopL+"</b> (-"+slD+" pts)\n\n"
+    +"💰 Entry: <b>$"+entry.toFixed(2)+"</b>\n"
+    +"🎯 TP1: <b>$"+tp1+"</b> (+"+tp1D+" pts)\n"
+    +"🎯 TP2: <b>$"+tp2+"</b> (+"+tp2D+" pts)\n"
+    +"🎯 TP3: <b>$"+tp3+"</b> (+"+tp3D+" pts)\n"
+    +"🛑 Stop Loss: <b>$"+stopL+"</b> (-"+slD+" pts)\n\n"
     +"EMA9: $"+e9+" · EMA21: $"+e21+"\n"
     +"RSI: "+rsi+" · ATR: $"+atr+"\n"
-    +"Based on "+closes.length+" real 15-min candles";
+    +"📊 Based on "+closes.length+" real 15-min candles";
   sendTelegram(tgMsg);
 
+  // Render
   var vEl=document.getElementById("verdict");
   vEl.style.display="block";vEl.className="verdict "+dir;
   document.getElementById("verdictDir").textContent=dir;
@@ -515,6 +517,7 @@ function buildSignal(closes,highs,lows,cur){
   window.scrollTo({top:document.getElementById("verdict").offsetTop-10,behavior:"smooth"});
 }
 
+// ── CLOSE ─────────────────────────────────────────────────
 function closeSignal(result){
   if(!activeSignal){alert("No active signal.");return;}
   var exitVal=parseFloat(document.getElementById("closePrice").value);
@@ -524,6 +527,14 @@ function closeSignal(result){
   if(result==="WIN")wins++;else losses++;
   totalPips+=pips;
   for(var i=0;i<log.length;i++){if(log[i].id===activeSignal.id){log[i]=JSON.parse(JSON.stringify(activeSignal));break;}}
+
+  // Send Telegram result
+  var emoji=result==="WIN"?"✅":"❌";
+  sendTelegram(emoji+" <b>SIGNAL "+result+"</b> — XAU/USD\n"
+    +"Direction: "+activeSignal.dir+"\n"
+    +"Entry: $"+activeSignal.entry.toFixed(2)+" → Exit: $"+exitVal.toFixed(2)+"\n"
+    +"Result: <b>"+(pips>=0?"+":"")+pips.toFixed(2)+" pts</b>");
+
   updateStats();renderLog();
   document.getElementById("verdict").style.display="none";
   activeSignal=null;
@@ -569,10 +580,7 @@ function setBusy(on){
   document.getElementById("spinner").style.display=on?"block":"none";
   document.getElementById("signalBtnText").textContent=on?"Fetching live data...":"GET GOLD SIGNAL";
 }
-function setStatus(txt,col){
-  document.getElementById("statusText").textContent=txt;
-  document.getElementById("statusDot").style.background=col||"#555";
-}
+function setStatus(txt,col){document.getElementById("statusText").textContent=txt;document.getElementById("statusDot").style.background=col||"#555";}
 function setInd(id,txt,col){var el=document.getElementById(id);if(!el)return;el.textContent=txt;if(col)el.style.color=col;}
 function showErr(msg){var el=document.getElementById("errBox");el.textContent="⚠ "+msg;el.style.display="block";}
 function hideErr(){document.getElementById("errBox").style.display="none";}
