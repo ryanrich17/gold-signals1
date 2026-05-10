@@ -470,10 +470,10 @@ function buildSignal(closes,highs,lows,cur){
   var sl=strength>=78?"STRONG":strength>=58?"MODERATE":"WEAK";
   var sc=strength>=78?"#00c853":strength>=58?"#FFD700":"#ff4444";
 
-  var slD=parseFloat((atr*2.0).toFixed(2));
-  var tp1D=parseFloat((atr*1.5).toFixed(2));
-  var tp2D=parseFloat((atr*3.0).toFixed(2));
-  var tp3D=parseFloat((atr*5.0).toFixed(2));
+  var slD=parseFloat((atr*1.8).toFixed(2));
+  var tp1D=parseFloat((atr*1.2).toFixed(2));
+  var tp2D=parseFloat((atr*2.5).toFixed(2));
+  var tp3D=parseFloat((atr*4.5).toFixed(2));
 
   var entry=cur,tp1,tp2,tp3,stopL;
   if(dir==="BUY"){tp1=(entry+tp1D).toFixed(2);tp2=(entry+tp2D).toFixed(2);tp3=(entry+tp3D).toFixed(2);stopL=(entry-slD).toFixed(2);}
