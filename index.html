@@ -250,8 +250,8 @@ var log=[],wins=0,losses=0,totalPnl=0;
 var autoTimer=null;
 var AUTO_INTERVAL=1200000;
 
-// Fixed intraday TP/SL levels for XAU/USD
-var TP1=50, TP2=100, TP3=200, SL=35;
+// Fixed intraday levels for XAU/USD — wide enough for real moves
+var TP1=80, TP2=160, TP3=300, SL=50;
 
 function saveKey(){
   var k=document.getElementById("apiKeyInput").value.trim();
@@ -439,11 +439,13 @@ function buildSignal(closes,highs,lows,cur){
   if(dir==="BUY"){tp1=(entry+TP1).toFixed(2);tp2=(entry+TP2).toFixed(2);tp3=(entry+TP3).toFixed(2);stopL=(entry-SL).toFixed(2);}
   else{tp1=(entry-TP1).toFixed(2);tp2=(entry-TP2).toFixed(2);tp3=(entry-TP3).toFixed(2);stopL=(entry+SL).toFixed(2);}
 
-  // Real dollar profit per lot size (gold CFD: 1 lot = 100oz, $1 move = $100)
-  var tp1P=(TP1*lot*100).toFixed(2);
-  var tp2P=(TP2*lot*100).toFixed(2);
-  var tp3P=(TP3*lot*100).toFixed(2);
-  var slP =(SL*lot*100).toFixed(2);
+  // PU Prime gold CFD: 0.01 lot = $0.01 per $1 move × 100oz = $1 per $1 move per 0.01 lot
+  var lot=parseFloat(document.getElementById("lotSize").value)||0.01;
+  var perDollar=lot*100; // $1 price move profit in USD
+  var tp1P=(TP1*perDollar).toFixed(2);
+  var tp2P=(TP2*perDollar).toFixed(2);
+  var tp3P=(TP3*perDollar).toFixed(2);
+  var slP =(SL*perDollar).toFixed(2);
 
   activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),tp1P:tp1P,tp2P:tp2P,tp3P:tp3P,slP:slP,lot:lot,strength:strength,strengthLabel:sl,candles:closes.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
 
