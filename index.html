@@ -402,9 +402,9 @@ function buildSignal(cl,hi,lo,cur,stype){
   var g1=gbp(lv.tp1,lot),g2=gbp(lv.tp2,lot),g3=gbp(lv.tp3,lot),gs=gbp(lv.sl,lot);
   activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),g1:g1,g2:g2,g3:g3,gs:gs,lv:lv,lot:lot,st:st,slbl:slbl,stype:stype,n:cl.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
   // Telegram
-  var em=dir==="BUY"?"[BUY]":"[SELL]";
-  var tl=stype==="AUTO"?"[AUTO SIGNAL]":"[MANUAL SIGNAL]";
-  sendTg(em+" <b>"+dir+" XAU/USD GOLD</b>\n"+tl+"\nStrength: <b>"+slbl+" ("+st+"%)</b>\n\nEntry: <b>$"+entry.toFixed(2)+"</b>\nTP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\nTP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\nTP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\nStop Loss: $"+stopL+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+cl.length+" real 15-min candles");
+  var em=dir==="BUY"?"\uD83D\uDFE2":"\uD83D\uDD34"; // green circle or red circle
+  var tl=stype==="AUTO"?"\uD83D\uDFE0 AUTO SIGNAL":"\uD83D\uDFE1 MANUAL SIGNAL"; // orange or yellow circle
+  sendTg(em+" <b>"+dir+" \u2014 XAU/USD GOLD</b>\n"+tl+"\nStrength: <b>"+slbl+" ("+st+"%)</b>\n\nEntry: <b>$"+entry.toFixed(2)+"</b>\nTP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\nTP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\nTP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\nStop Loss: $"+stopL+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+cl.length+" real 15-min candles");
   // Render
   var vEl=document.getElementById("verdict");
   vEl.style.display="block";vEl.className="verdict "+dir;
@@ -443,7 +443,7 @@ function closeSignal(result){
   if(result==="WIN")wins++;else losses++;
   totalPnl+=pnl;
   for(var i=0;i<log.length;i++){if(log[i].id===activeSignal.id){log[i]=JSON.parse(JSON.stringify(activeSignal));break;}}
-  var em=result==="WIN"?"[WIN]":"[LOSS]";
+  var em=result==="WIN"?"\u2705":"\u274C"; // green tick or red cross
   sendTg(em+" <b>TRADE "+result+"</b> XAU/USD\n"+activeSignal.dir+" | Entry: $"+activeSignal.entry.toFixed(2)+" Exit: $"+ev.toFixed(2)+"\nMove: "+(mv>=0?"+":"")+mv.toFixed(2)+" pts | P&L: "+(pnl>=0?"+":"")+P+pnl.toFixed(2));
   updateStats();renderLog();
   document.getElementById("verdict").style.display="none";
