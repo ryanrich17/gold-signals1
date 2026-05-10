@@ -96,7 +96,6 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 .log-item{background:#ffffff05;border-radius:10px;padding:12px;margin-bottom:8px;border-left:3px solid #FFD700;}
 .log-item.win{border-left-color:#00c853;background:#00c85306;}
 .log-item.loss{border-left-color:#ff4444;background:#ff444406;}
-.log-item.open{border-left-color:#FFD700;}
 .log-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;}
 .log-badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
 .log-badge.BUY{background:#00c85322;color:#00c853;}
@@ -108,161 +107,135 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 .log-pnl{font-size:13px;font-weight:700;margin-top:4px;}
 .log-str{font-size:11px;margin-top:3px;}
 .log-time{font-size:10px;color:#555;margin-top:3px;}
-.err-box{background:#ff444411;border:1px solid #ff444433;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#ff4444;display:none;line-height:1.6;}
+.err-box{background:#ff444411;border:1px solid #ff444433;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#ff4444;display:none;}
 .footer{text-align:center;color:#333;font-size:11px;padding:14px;}
 @media(max-width:480px){.stats-bar{grid-template-columns:repeat(2,1fr);}.ind-bar{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
 <header>
-  <div>
-    <h1>GOLD SIGNALS — XAU/USD</h1>
-    <div class="sub">Live data · Telegram alerts · Auto signals every 20 mins</div>
-  </div>
+  <div><h1>GOLD SIGNALS &mdash; XAU/USD</h1><div class="sub">Live data &middot; Telegram alerts &middot; Auto signals</div></div>
 </header>
 <div class="container">
 
-  <!-- TWELVE DATA KEY -->
-
-  <div class="api-setup">
-    <div class="api-title">&#128273; Twelve Data API Key</div>
-    <div class="api-sub">Free at <b>twelvedata.com</b> — sign up, copy your key, paste below. Saved on this device only.</div>
-    <div class="api-row">
-      <input id="apiKeyInput" type="password" placeholder="Paste your API key here">
-      <button class="btn-save" onclick="saveKey()">Save</button>
-    </div>
-    <div class="api-ok" id="apiOk">&#10003; API key saved</div>
+<div class="api-setup">
+  <div class="api-title">Twelve Data API Key</div>
+  <div class="api-sub">Free at <b>twelvedata.com</b> &mdash; saved on this device only.</div>
+  <div class="api-row">
+    <input id="apiKeyInput" type="password" placeholder="Paste API key">
+    <button class="btn-save" onclick="saveKey()">Save</button>
   </div>
+  <div class="api-ok" id="apiOk">API key saved</div>
+</div>
 
-  <!-- TELEGRAM -->
-
-  <div class="api-setup" style="border-color:#00bcd4;margin-bottom:14px;">
-    <div class="api-title" style="color:#00bcd4;">&#128242; Telegram Alerts — Strong signals only</div>
-    <div class="api-sub">1. Telegram &#8594; <b>@BotFather</b> &#8594; /newbot &#8594; copy token<br>2. Telegram &#8594; <b>@userinfobot</b> &#8594; Start &#8594; copy Chat ID</div>
-    <div class="api-row">
-      <input id="tgTokenInput" type="password" placeholder="Bot Token" style="border-color:#00bcd466;">
-      <button class="btn-save" onclick="saveTg()" style="background:linear-gradient(135deg,#00bcd4,#006080);">Save</button>
-    </div>
-    <div class="api-row">
-      <input id="tgChatInput" type="text" placeholder="Chat ID" style="border-color:#00bcd466;">
-      <button class="btn-save" onclick="testTg()" style="background:#0a0e00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
-    </div>
-    <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">&#10003; Telegram ready — strong signals will alert your phone</div>
+<div class="api-setup" style="border-color:#00bcd4;margin-bottom:14px;">
+  <div class="api-title" style="color:#00bcd4;">Telegram Alerts</div>
+  <div class="api-sub">@BotFather &rarr; /newbot &rarr; copy token<br>@userinfobot &rarr; Start &rarr; copy Chat ID</div>
+  <div class="api-row">
+    <input id="tgTokenInput" type="password" placeholder="Bot Token" style="border-color:#00bcd466;">
+    <button class="btn-save" onclick="saveTg()" style="background:linear-gradient(135deg,#00bcd4,#006080);">Save</button>
   </div>
-
-  <!-- LOT SIZE -->
-
-  <div class="lot-wrap">
-    <label>LOT SIZE</label>
-    <input id="lotSize" type="number" value="0.01" min="0.01" max="100" step="0.01">
-    <div class="lot-note">&#163; profit &amp; loss calculated per signal automatically</div>
+  <div class="api-row">
+    <input id="tgChatInput" type="text" placeholder="Chat ID" style="border-color:#00bcd466;">
+    <button class="btn-save" onclick="testTg()" style="background:#0a0e00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
   </div>
+  <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">Telegram ready</div>
+</div>
 
-  <div class="err-box" id="errBox"></div>
+<div class="lot-wrap">
+  <label>LOT SIZE</label>
+  <input id="lotSize" type="number" value="0.01" min="0.01" max="100" step="0.01">
+  <div class="lot-note">Profit and loss in GBP calculated per signal</div>
+</div>
 
-  <!-- BUTTONS -->
+<div class="err-box" id="errBox"></div>
 
-  <div class="signal-btn-wrap">
-    <button class="btn-get-signal" id="signalBtn" onclick="getSignal()">
-      <div class="spinner" id="spinner"></div>
-      <span id="signalBtnText">GET GOLD SIGNAL</span>
-    </button>
+<div class="signal-btn-wrap">
+  <button class="btn-get-signal" id="signalBtn" onclick="getSignal()">
+    <div class="spinner" id="spinner"></div>
+    <span id="signalBtnText">GET GOLD SIGNAL</span>
+  </button>
+</div>
+<button id="autoBtn" onclick="toggleAuto()">AUTO SIGNAL: OFF</button>
+
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <div class="status-text" id="statusText">Save your API key then tap Get Signal</div>
+  <div class="status-price" id="statusPrice"></div>
+</div>
+
+<div class="ind-bar" id="indBar">
+  <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="ema9d">--</div><div class="is">Short</div></div>
+  <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="ema21d">--</div><div class="is">Mid</div></div>
+  <div class="ind-box"><div class="il">RSI 14</div><div class="iv" id="rsid">--</div><div class="is">Momentum</div></div>
+  <div class="ind-box"><div class="il">ATR 14</div><div class="iv" id="atrd">--</div><div class="is">Volatility</div></div>
+</div>
+
+<div class="verdict" id="verdict">
+  <div class="verdict-direction" id="verdictDir">--</div>
+  <div class="verdict-sub" id="verdictSub">--</div>
+  <div class="strength-wrap">
+    <div class="strength-label"><span>SIGNAL STRENGTH</span><span id="strengthPct">--</span></div>
+    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+    <div class="strength-text" id="strengthText">--</div>
   </div>
-  <button id="autoBtn" onclick="toggleAuto()">AUTO SIGNAL: OFF</button>
-
-  <!-- STATUS -->
-
-  <div class="status-bar">
-    <div class="status-dot" id="statusDot"></div>
-    <div class="status-text" id="statusText">Save your API key above then tap Get Signal</div>
-    <div class="status-price" id="statusPrice"></div>
+  <div class="reasoning">
+    <div class="reasoning-title">ANALYSIS</div>
+    <div id="reasonList"></div>
   </div>
-
-  <!-- INDICATORS -->
-
-  <div class="ind-bar" id="indBar">
-    <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="ema9d">--</div><div class="is">Short</div></div>
-    <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="ema21d">--</div><div class="is">Mid</div></div>
-    <div class="ind-box"><div class="il">RSI 14</div><div class="iv" id="rsid">--</div><div class="is">Momentum</div></div>
-    <div class="ind-box"><div class="il">ATR 14</div><div class="iv" id="atrd">--</div><div class="is">Volatility</div></div>
+  <div class="levels-label">TRADE LEVELS</div>
+  <div class="entry-box"><div class="el">ENTRY PRICE</div><div class="ev" id="entryVal">--</div></div>
+  <div class="levels-grid">
+    <div class="lbox tp1"><div class="ll">TP1 Safe</div><div class="lv" id="tp1Val">--</div><div class="ls" id="tp1Pts">--</div><div class="lp" id="tp1Gbp">--</div></div>
+    <div class="lbox tp2"><div class="ll">TP2 Target</div><div class="lv" id="tp2Val">--</div><div class="ls" id="tp2Pts">--</div><div class="lp" id="tp2Gbp">--</div></div>
+    <div class="lbox tp3"><div class="ll">TP3 Max</div><div class="lv" id="tp3Val">--</div><div class="ls" id="tp3Pts">--</div><div class="lp" id="tp3Gbp">--</div></div>
   </div>
-
-  <!-- VERDICT -->
-
-  <div class="verdict" id="verdict">
-    <div class="verdict-direction" id="verdictDir">--</div>
-    <div class="verdict-sub" id="verdictSub">--</div>
-    <div class="strength-wrap">
-      <div class="strength-label"><span>SIGNAL STRENGTH</span><span id="strengthPct">--</span></div>
-      <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-      <div class="strength-text" id="strengthText">--</div>
-    </div>
-    <div class="reasoning">
-      <div class="reasoning-title">ANALYSIS — WHY THIS SIGNAL</div>
-      <div id="reasonList"></div>
-    </div>
-    <div class="levels-label">TRADE LEVELS</div>
-    <div class="entry-box"><div class="el">ENTRY PRICE</div><div class="ev" id="entryVal">--</div></div>
-    <div class="levels-grid">
-      <div class="lbox tp1"><div class="ll">TP1 — Safe</div><div class="lv" id="tp1Val">--</div><div class="ls" id="tp1Pts">--</div><div class="lp" id="tp1Gbp">--</div></div>
-      <div class="lbox tp2"><div class="ll">TP2 — Target</div><div class="lv" id="tp2Val">--</div><div class="ls" id="tp2Pts">--</div><div class="lp" id="tp2Gbp">--</div></div>
-      <div class="lbox tp3"><div class="ll">TP3 — Max</div><div class="lv" id="tp3Val">--</div><div class="ls" id="tp3Pts">--</div><div class="lp" id="tp3Gbp">--</div></div>
-    </div>
-    <div class="sl-box">
-      <div class="ll">STOP LOSS</div>
-      <div class="lv" id="slVal">--</div>
-      <div class="ls" id="slPts">--</div>
-      <div class="lp" id="slGbp">--</div>
-    </div>
-    <div class="close-wrap">
-      <div class="close-label">When trade closes — enter your exit price:</div>
-      <div class="close-row">
-        <input id="closePrice" type="number" placeholder="Exit price" step="0.01">
-        <button class="btn-close-win" onclick="closeSignal('WIN')">&#10003; WIN</button>
-        <button class="btn-close-loss" onclick="closeSignal('LOSS')">&#10007; LOSS</button>
-      </div>
+  <div class="sl-box">
+    <div class="ll">STOP LOSS</div>
+    <div class="lv" id="slVal">--</div>
+    <div class="ls" id="slPts">--</div>
+    <div class="lp" id="slGbp">--</div>
+  </div>
+  <div class="close-wrap">
+    <div class="close-label">Enter exit price when trade closes:</div>
+    <div class="close-row">
+      <input id="closePrice" type="number" placeholder="Exit price" step="0.01">
+      <button class="btn-close-win" onclick="closeSignal('WIN')">WIN</button>
+      <button class="btn-close-loss" onclick="closeSignal('LOSS')">LOSS</button>
     </div>
   </div>
+</div>
 
-  <!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-box wins"><div class="sl4">WINS</div><div class="sv" id="statWins">0</div></div>
+  <div class="stat-box loss"><div class="sl4">LOSSES</div><div class="sv" id="statLoss">0</div></div>
+  <div class="stat-box rate"><div class="sl4">WIN RATE</div><div class="sv" id="statRate">--</div></div>
+  <div class="stat-box pnl"><div class="sl4">TOTAL P&amp;L</div><div class="sv" id="statPnl">--</div></div>
+</div>
 
-  <div class="stats-bar">
-    <div class="stat-box wins"><div class="sl4">WINS</div><div class="sv" id="statWins">0</div></div>
-    <div class="stat-box loss"><div class="sl4">LOSSES</div><div class="sv" id="statLoss">0</div></div>
-    <div class="stat-box rate"><div class="sl4">WIN RATE</div><div class="sv" id="statRate">--</div></div>
-    <div class="stat-box pnl"><div class="sl4">TOTAL P&amp;L</div><div class="sv" id="statPnl">&#163;0.00</div></div>
-  </div>
-
-  <!-- LOG -->
-
-  <div class="log-wrap">
-    <div class="log-title">Signal Log <button class="btn-clr" onclick="clearLog()">Clear</button></div>
-    <div id="logList"><div class="log-empty">No signals yet — tap Get Signal to begin</div></div>
-  </div>
+<div class="log-wrap">
+  <div class="log-title">Signal Log <button class="btn-clr" onclick="clearLog()">Clear</button></div>
+  <div id="logList"><div class="log-empty">No signals yet</div></div>
+</div>
 
 </div>
-<div class="footer">XAU/USD — Educational only. Not financial advice.</div>
+<div class="footer">XAU/USD &mdash; Educational only. Not financial advice.</div>
 
 <script>
 var API_KEY="",TG_TOKEN="",TG_CHAT="";
-var GBP_SIGN="\u00A3"; // £ symbol — guaranteed to render correctly
 var activeSignal=null;
 var log=[],wins=0,losses=0,totalPnl=0;
 var autoTimer=null;
-var AUTO_INTERVAL=1200000; // 20 minutes
-var GBP=0.79; // USD to GBP rate
+var AUTO_INTERVAL=1200000;
+var GBPRATE=0.79;
+var P="£"; // pound sign stored as variable
 
-// Short intraday levels scaled by signal strength
-function getLevels(strength){
-  if(strength>=85) return{tp1:12,tp2:25,tp3:50,sl:10};
-  else if(strength>=70) return{tp1:8,tp2:18,tp3:35,sl:8};
-  else return{tp1:5,tp2:10,tp3:20,sl:6};
+function getLevels(s){
+  if(s>=85)return{tp1:12,tp2:25,tp3:50,sl:10};
+  if(s>=70)return{tp1:8,tp2:18,tp3:35,sl:8};
+  return{tp1:5,tp2:10,tp3:20,sl:6};
 }
-
-// GBP profit calc: lot * 100 (contract) * move * GBP rate
-function calcGbp(move,lot){
-  return (move*lot*100*GBP).toFixed(2);
-}
+function gbp(move,lot){return(move*lot*100*GBPRATE).toFixed(2);}
 
 function saveKey(){
   var k=document.getElementById("apiKeyInput").value.trim();
@@ -270,9 +243,8 @@ function saveKey(){
   localStorage.setItem("td_gold_key",k);API_KEY=k;
   document.getElementById("apiKeyInput").value="";
   document.getElementById("apiOk").style.display="block";
-  setStatus("API key saved — tap Get Signal","#00c853");
+  setStatus("API key saved","#00c853");
 }
-
 function saveTg(){
   var t=document.getElementById("tgTokenInput").value.trim();
   var c=document.getElementById("tgChatInput").value.trim();
@@ -280,305 +252,238 @@ function saveTg(){
   if(c){localStorage.setItem("td_tg_chat",c);TG_CHAT=c;}
   if(TG_TOKEN&&TG_CHAT)document.getElementById("tgOk").style.display="block";
 }
-
 async function testTg(){
   var t=TG_TOKEN||localStorage.getItem("td_tg_token");
   var c=TG_CHAT||localStorage.getItem("td_tg_chat");
   if(!t||!c){alert("Save token and chat ID first.");return;}
-  try{
-    var r=await fetch("https://api.telegram.org/bot"+t+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:"Gold Signals connected! You will receive alerts here."})});
-    var d=await r.json();
-    alert(d.ok?"Telegram working! Check your messages.":"Failed: "+d.description);
-  }catch(e){alert("Error: "+e.message);}
+  try{var r=await fetch("https://api.telegram.org/bot"+t+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:"Gold Signals connected!"})});var d=await r.json();alert(d.ok?"Telegram working!":"Failed: "+d.description);}
+  catch(e){alert("Error: "+e.message);}
 }
-
-function sendTelegram(msg){
+function sendTg(msg){
   var t=TG_TOKEN||localStorage.getItem("td_tg_token");
   var c=TG_CHAT||localStorage.getItem("td_tg_chat");
   if(!t||!c)return;
   try{fetch("https://api.telegram.org/bot"+t+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:msg,parse_mode:"HTML"})});}catch(e){}
 }
-
 function loadAll(){
   API_KEY=localStorage.getItem("td_gold_key")||"";
   TG_TOKEN=localStorage.getItem("td_tg_token")||"";
   TG_CHAT=localStorage.getItem("td_tg_chat")||"";
-  if(API_KEY){document.getElementById("apiOk").style.display="block";setStatus("API key ready — tap Get Signal","#00c853");}
+  if(API_KEY){document.getElementById("apiOk").style.display="block";setStatus("Ready — tap Get Signal","#00c853");}
   if(TG_TOKEN&&TG_CHAT)document.getElementById("tgOk").style.display="block";
 }
-
 function toggleAuto(){
   var btn=document.getElementById("autoBtn");
   if(autoTimer){
     clearInterval(autoTimer);autoTimer=null;
     btn.textContent="AUTO SIGNAL: OFF";
     btn.style.cssText="width:100%;padding:14px;background:linear-gradient(135deg,#444,#222);color:#888;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;margin-bottom:14px;";
-    setStatus("Auto signals off","#555");
+    setStatus("Auto off","#555");
   }else{
     if(!API_KEY){alert("Save your API key first.");return;}
     btn.textContent="AUTO SIGNAL: ON";
     btn.style.cssText="width:100%;padding:14px;background:linear-gradient(135deg,#00c853,#007733);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;margin-bottom:14px;";
-    setStatus("Auto on — checking every 20 mins for strong signals","#00c853");
+    setStatus("Auto on — checking every 20 mins","#00c853");
     autoCheck();autoTimer=setInterval(autoCheck,AUTO_INTERVAL);
   }
 }
-
+async function fetchCandles(){
+  var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&exchange=OANDA&apikey="+API_KEY;
+  var r=await fetch(url);var d=await r.json();
+  if(d.status==="error"||!d.values||!d.values.length)return null;
+  return d.values.reverse();
+}
 async function autoCheck(){
   if(!API_KEY)return;
   try{
-    var candles=await fetchCandles();
-    if(!candles)return;
-    var closes=candles.map(function(c){return parseFloat(c.close);});
-    var highs=candles.map(function(c){return parseFloat(c.high);});
-    var lows=candles.map(function(c){return parseFloat(c.low);});
-    var cur=closes[closes.length-1];
-    if(cur<1000)return;
-    var result=calcStrength(closes,highs,lows,cur);
-    if(result.strength>=78){
-      setStatus("Strong signal detected — auto firing!","#00c853");
+    var c=await fetchCandles();if(!c)return;
+    var cl=c.map(function(x){return parseFloat(x.close);});
+    var hi=c.map(function(x){return parseFloat(x.high);});
+    var lo=c.map(function(x){return parseFloat(x.low);});
+    var cur=cl[cl.length-1];if(cur<1000)return;
+    var res=calcStr(cl,hi,lo,cur);
+    if(res.strength>=78){
+      setStatus("Strong signal — auto firing!","#00c853");
       document.getElementById("statusPrice").textContent="$"+cur.toFixed(2);
       document.getElementById("indBar").style.display="grid";
-      buildSignal(closes,highs,lows,cur,"AUTO");
+      buildSignal(cl,hi,lo,cur,"AUTO");
       if(navigator.vibrate)navigator.vibrate([200,100,200]);
     }else{
-      setStatus("Auto check "+new Date().toLocaleTimeString()+" — "+result.strength+"% not strong enough yet","#FFD700");
+      setStatus("Auto "+new Date().toLocaleTimeString()+" — "+res.strength+"% not strong enough","#FFD700");
     }
   }catch(e){}
 }
-
-async function fetchCandles(){
-  var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&exchange=OANDA&apikey="+API_KEY;
-  var resp=await fetch(url);
-  var data=await resp.json();
-  if(data.status==="error"||!data.values||!data.values.length)return null;
-  return data.values.reverse();
-}
-
 async function getSignal(){
   if(!API_KEY){alert("Save your API key first.");return;}
   setBusy(true);hideErr();document.getElementById("verdict").style.display="none";
   try{
-    setStatus("Fetching live XAU/USD data...","#FFD700");
-    var candles=await fetchCandles();
-    if(!candles)throw new Error("No data returned — market may be closed");
-    var closes=candles.map(function(c){return parseFloat(c.close);});
-    var highs=candles.map(function(c){return parseFloat(c.high);});
-    var lows=candles.map(function(c){return parseFloat(c.low);});
-    var cur=closes[closes.length-1];
-    if(cur<1000)throw new Error("Wrong data returned ($"+cur.toFixed(2)+"). Try again.");
-    setStatus("Loaded "+candles.length+" candles · $"+cur.toFixed(2),"#00c853");
+    setStatus("Fetching live XAU/USD...","#FFD700");
+    var c=await fetchCandles();
+    if(!c)throw new Error("No data — market may be closed");
+    var cl=c.map(function(x){return parseFloat(x.close);});
+    var hi=c.map(function(x){return parseFloat(x.high);});
+    var lo=c.map(function(x){return parseFloat(x.low);});
+    var cur=cl[cl.length-1];
+    if(cur<1000)throw new Error("Wrong data ($"+cur.toFixed(2)+") — try again");
+    setStatus("Loaded "+c.length+" candles · $"+cur.toFixed(2),"#00c853");
     document.getElementById("statusPrice").textContent="$"+cur.toFixed(2);
     document.getElementById("indBar").style.display="grid";
-    buildSignal(closes,highs,lows,cur,"MANUAL");
-  }catch(e){showErr(e.message);setStatus("Failed — see error above","#ff4444");}
+    buildSignal(cl,hi,lo,cur,"MANUAL");
+  }catch(e){showErr(e.message);setStatus("Failed","#ff4444");}
   setBusy(false);
 }
-
-function calcEMA(arr,p){if(arr.length<p)p=arr.length;var k=2/(p+1),e=arr[0];for(var i=1;i<arr.length;i++)e=arr[i]*k+e*(1-k);return parseFloat(e.toFixed(2));}
-function calcRSI(arr,p){p=Math.min(p,arr.length-1);var g=0,l=0;for(var i=arr.length-p;i<arr.length;i++){var d=arr[i]-arr[i-1];if(d>0)g+=d;else l-=d;}return parseFloat((100-(100/(1+g/(l||0.0001)))).toFixed(1));}
-function calcATR(h,l,c,p){p=Math.min(p,c.length-1);var trs=[];for(var i=c.length-p;i<c.length;i++)trs.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])));return parseFloat((trs.reduce(function(a,b){return a+b;},0)/trs.length).toFixed(2));}
-function calcMACD(arr){var mv=[],k12=2/13,k26=2/27,e12=arr[0],e26=arr[0];for(var i=1;i<arr.length;i++){e12=arr[i]*k12+e12*(1-k12);e26=arr[i]*k26+e26*(1-k26);mv.push(parseFloat((e12-e26).toFixed(2)));}var ml=mv[mv.length-1],pm=mv.length>=2?mv[mv.length-2]:ml,sig=calcEMA(mv,Math.min(9,mv.length));return{macd:ml,signal:parseFloat(sig.toFixed(2)),hist:parseFloat((ml-sig).toFixed(2)),crossedUp:pm<=0&&ml>0,crossedDn:pm>=0&&ml<0,aboveZero:ml>0};}
-
-function calcStrength(closes,highs,lows,cur){
-  var e9=calcEMA(closes,9),e21=calcEMA(closes,21),rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes),hour=new Date().getHours();
-  var bull=0,bear=0;
-  if(e9>e21&&cur>e9)bull+=22;else if(e9<e21&&cur<e9)bear+=22;else if(e9>e21)bull+=10;else bear+=10;
-  if(rsi>70)bear+=20;else if(rsi<30)bull+=20;else if(rsi>=55&&rsi<=70)bull+=12;else if(rsi>=30&&rsi<=45)bear+=12;
-  if(macd.crossedUp)bull+=18;else if(macd.crossedDn)bear+=18;else if(macd.aboveZero&&macd.hist>0)bull+=10;else if(!macd.aboveZero&&macd.hist<0)bear+=10;
+function ema(arr,p){if(arr.length<p)p=arr.length;var k=2/(p+1),e=arr[0];for(var i=1;i<arr.length;i++)e=arr[i]*k+e*(1-k);return parseFloat(e.toFixed(2));}
+function rsi(arr,p){p=Math.min(p,arr.length-1);var g=0,l=0;for(var i=arr.length-p;i<arr.length;i++){var d=arr[i]-arr[i-1];if(d>0)g+=d;else l-=d;}return parseFloat((100-(100/(1+g/(l||0.0001)))).toFixed(1));}
+function atr(h,l,c,p){p=Math.min(p,c.length-1);var t=[];for(var i=c.length-p;i<c.length;i++)t.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])));return parseFloat((t.reduce(function(a,b){return a+b;},0)/t.length).toFixed(2));}
+function macd(arr){var mv=[],k12=2/13,k26=2/27,e12=arr[0],e26=arr[0];for(var i=1;i<arr.length;i++){e12=arr[i]*k12+e12*(1-k12);e26=arr[i]*k26+e26*(1-k26);mv.push(parseFloat((e12-e26).toFixed(2)));}var ml=mv[mv.length-1],pm=mv.length>=2?mv[mv.length-2]:ml,sg=ema(mv,Math.min(9,mv.length));return{ml:ml,sg:parseFloat(sg.toFixed(2)),h:parseFloat((ml-sg).toFixed(2)),cu:pm<=0&&ml>0,cd:pm>=0&&ml<0,az:ml>0};}
+function calcStr(cl,hi,lo,cur){
+  var e9=ema(cl,9),e21=ema(cl,21),r=rsi(cl,14),a=atr(hi,lo,cl,14),m=macd(cl),hr=new Date().getHours();
+  var b=0,s=0;
+  if(e9>e21&&cur>e9)b+=22;else if(e9<e21&&cur<e9)s+=22;else if(e9>e21)b+=10;else s+=10;
+  if(r>70)s+=20;else if(r<30)b+=20;else if(r>=55&&r<=70)b+=12;else if(r>=30&&r<=45)s+=12;
+  if(m.cu)b+=18;else if(m.cd)s+=18;else if(m.az&&m.h>0)b+=10;else if(!m.az&&m.h<0)s+=10;
   var n100=Math.round(cur/100)*100,d100=cur-n100;
-  if(Math.abs(d100)<15){if(d100>0&&d100<8)bear+=12;else if(d100<0&&Math.abs(d100)<8)bull+=12;}
-  var ext=((cur-e21)/e21*100);if(ext>0.5)bear+=10;else if(ext<-0.5)bull+=10;
-  if(hour>=8&&hour<12){bull+=3;bear+=3;}else if(hour>=12&&hour<13){bull+=5;bear+=5;}else if(hour>=13&&hour<17){bull+=3;bear+=3;}
-  var diff=bull-bear,strength;
-  if(Math.abs(diff)<6)strength=35+Math.abs(diff);else strength=Math.min(95,48+Math.abs(diff)*1.1);
-  return{strength:Math.round(strength),dir:diff>=0?"BUY":"SELL"};
+  if(Math.abs(d100)<15){if(d100>0&&d100<8)s+=12;else if(d100<0&&Math.abs(d100)<8)b+=12;}
+  var ext=((cur-e21)/e21*100);if(ext>0.5)s+=10;else if(ext<-0.5)b+=10;
+  if(hr>=8&&hr<12){b+=3;s+=3;}else if(hr>=12&&hr<13){b+=5;s+=5;}else if(hr>=13&&hr<17){b+=3;s+=3;}
+  var df=b-s,st;
+  if(Math.abs(df)<6)st=35+Math.abs(df);else st=Math.min(95,48+Math.abs(df)*1.1);
+  return{strength:Math.round(st),dir:df>=0?"BUY":"SELL"};
 }
-
-function buildSignal(closes,highs,lows,cur,signalType){
-  var e9=calcEMA(closes,9),e21=calcEMA(closes,21),rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes),hour=new Date().getHours();
+function buildSignal(cl,hi,lo,cur,stype){
+  var e9=ema(cl,9),e21=ema(cl,21),r=rsi(cl,14),a=atr(hi,lo,cl,14),m=macd(cl),hr=new Date().getHours();
   setInd("ema9d","$"+e9,e9<cur?"#00c853":"#ff4444");
   setInd("ema21d","$"+e21,e21<cur?"#00c853":"#ff4444");
-  setInd("rsid",rsi,rsi>70?"#ff4444":rsi<30?"#00c853":"#FFD700");
-  setInd("atrd","$"+atr,"#FFD700");
-
-  var bull=0,bear=0,reasons=[];
-  if(e9>e21&&cur>e9){bull+=22;reasons.push({t:"EMA9 ($"+e9+") above EMA21 ($"+e21+") — bullish stack confirmed",c:"pos"});}
-  else if(e9<e21&&cur<e9){bear+=22;reasons.push({t:"EMA9 ($"+e9+") below EMA21 ($"+e21+") — bearish stack confirmed",c:"neg"});}
-  else if(e9>e21){bull+=10;reasons.push({t:"EMA9 above EMA21 — uptrend intact",c:"pos"});}
-  else{bear+=10;reasons.push({t:"EMA9 below EMA21 — downtrend in place",c:"neg"});}
-
-  if(rsi>70){bear+=20;reasons.push({t:"RSI "+rsi+" — overbought, reversal likely",c:"neg"});}
-  else if(rsi<30){bull+=20;reasons.push({t:"RSI "+rsi+" — oversold, bounce likely",c:"pos"});}
-  else if(rsi>=55&&rsi<=70){bull+=12;reasons.push({t:"RSI "+rsi+" — bullish momentum zone",c:"pos"});}
-  else if(rsi>=30&&rsi<=45){bear+=12;reasons.push({t:"RSI "+rsi+" — bearish momentum zone",c:"neg"});}
-  else{reasons.push({t:"RSI "+rsi+" — neutral zone",c:"neu"});}
-
-  if(macd.crossedUp){bull+=18;reasons.push({t:"MACD crossed above zero — bullish shift",c:"pos"});}
-  else if(macd.crossedDn){bear+=18;reasons.push({t:"MACD crossed below zero — bearish shift",c:"neg"});}
-  else if(macd.aboveZero&&macd.hist>0){bull+=10;reasons.push({t:"MACD above zero and rising — bulls in control",c:"pos"});}
-  else if(!macd.aboveZero&&macd.hist<0){bear+=10;reasons.push({t:"MACD below zero and falling — bears in control",c:"neg"});}
-  else{reasons.push({t:"MACD mixed — no clear momentum",c:"neu"});}
-
-  reasons.push({t:"ATR $"+atr+" ("+((atr/cur*100).toFixed(2))+"% volatility)",c:"neu"});
-
+  setInd("rsid",r,r>70?"#ff4444":r<30?"#00c853":"#FFD700");
+  setInd("atrd","$"+a,"#FFD700");
+  var b=0,s=0,rs=[];
+  if(e9>e21&&cur>e9){b+=22;rs.push({t:"EMA9 ("+e9+") above EMA21 ("+e21+") — bullish stack",c:"pos"});}
+  else if(e9<e21&&cur<e9){s+=22;rs.push({t:"EMA9 ("+e9+") below EMA21 ("+e21+") — bearish stack",c:"neg"});}
+  else if(e9>e21){b+=10;rs.push({t:"EMA9 above EMA21 — uptrend",c:"pos"});}
+  else{s+=10;rs.push({t:"EMA9 below EMA21 — downtrend",c:"neg"});}
+  if(r>70){s+=20;rs.push({t:"RSI "+r+" — overbought",c:"neg"});}
+  else if(r<30){b+=20;rs.push({t:"RSI "+r+" — oversold",c:"pos"});}
+  else if(r>=55&&r<=70){b+=12;rs.push({t:"RSI "+r+" — bullish momentum",c:"pos"});}
+  else if(r>=30&&r<=45){s+=12;rs.push({t:"RSI "+r+" — bearish momentum",c:"neg"});}
+  else{rs.push({t:"RSI "+r+" — neutral",c:"neu"});}
+  if(m.cu){b+=18;rs.push({t:"MACD crossed above zero — bullish shift",c:"pos"});}
+  else if(m.cd){s+=18;rs.push({t:"MACD crossed below zero — bearish shift",c:"neg"});}
+  else if(m.az&&m.h>0){b+=10;rs.push({t:"MACD above zero rising — bulls in control",c:"pos"});}
+  else if(!m.az&&m.h<0){s+=10;rs.push({t:"MACD below zero falling — bears in control",c:"neg"});}
+  else{rs.push({t:"MACD mixed — no clear momentum",c:"neu"});}
+  rs.push({t:"ATR $"+a+" ("+((a/cur*100).toFixed(2))+"% volatility)",c:"neu"});
   var n100=Math.round(cur/100)*100,d100=cur-n100,n50=Math.round(cur/50)*50,d50=cur-n50;
   if(Math.abs(d100)<15){
-    if(d100>0&&d100<8){bear+=12;reasons.push({t:"Just above $"+n100+" major resistance",c:"neg"});}
-    else if(d100<0&&Math.abs(d100)<8){bull+=12;reasons.push({t:"Just below $"+n100+" strong support",c:"pos"});}
+    if(d100>0&&d100<8){s+=12;rs.push({t:"Just above $"+n100+" resistance",c:"neg"});}
+    else if(d100<0&&Math.abs(d100)<8){b+=12;rs.push({t:"Just below $"+n100+" support",c:"pos"});}
   }else if(Math.abs(d50)<10){
-    if(d50>0){bear+=6;reasons.push({t:"Near $"+n50+" $50 resistance",c:"neg"});}
-    else{bull+=6;reasons.push({t:"Near $"+n50+" $50 support",c:"pos"});}
+    if(d50>0){s+=6;rs.push({t:"Near $"+n50+" resistance",c:"neg"});}
+    else{b+=6;rs.push({t:"Near $"+n50+" support",c:"pos"});}
   }
   var ext=((cur-e21)/e21*100);
-  if(ext>0.5){bear+=10;reasons.push({t:"Price "+ext.toFixed(2)+"% above EMA21 — stretched",c:"neg"});}
-  else if(ext<-0.5){bull+=10;reasons.push({t:"Price "+Math.abs(ext).toFixed(2)+"% below EMA21 — bounce likely",c:"pos"});}
-
-  if(hour>=8&&hour<12){bull+=3;bear+=3;reasons.push({t:"London session — reliable signals",c:"neu"});}
-  else if(hour>=12&&hour<13){bull+=5;bear+=5;reasons.push({t:"London/NY overlap — strongest window",c:"neu"});}
-  else if(hour>=13&&hour<17){bull+=3;bear+=3;reasons.push({t:"New York session — peak volatility",c:"neu"});}
-  else if(hour>=2&&hour<7){reasons.push({t:"Asian session — lower reliability",c:"neg"});}
-
-  var diff=bull-bear,dir,strength;
-  if(Math.abs(diff)<6){dir=diff>=0?"BUY":"SELL";strength=35+Math.abs(diff);}
-  else if(diff>0){dir="BUY";strength=Math.min(95,48+diff*1.1);}
-  else{dir="SELL";strength=Math.min(95,48+Math.abs(diff)*1.1);}
-  strength=Math.round(strength);
-
-  var sl=strength>=78?"STRONG":strength>=58?"MODERATE":"WEAK";
-  var sc=strength>=78?"#00c853":strength>=58?"#FFD700":"#ff4444";
-  var lvl=getLevels(strength);
+  if(ext>0.5){s+=10;rs.push({t:"Price "+ext.toFixed(2)+"% above EMA21 — stretched",c:"neg"});}
+  else if(ext<-0.5){b+=10;rs.push({t:"Price "+Math.abs(ext).toFixed(2)+"% below EMA21",c:"pos"});}
+  if(hr>=8&&hr<12){b+=3;s+=3;rs.push({t:"London session",c:"neu"});}
+  else if(hr>=12&&hr<13){b+=5;s+=5;rs.push({t:"London/NY overlap — strongest window",c:"neu"});}
+  else if(hr>=13&&hr<17){b+=3;s+=3;rs.push({t:"New York session",c:"neu"});}
+  else if(hr>=2&&hr<7){rs.push({t:"Asian session — lower reliability",c:"neg"});}
+  var df=b-s,dir,st;
+  if(Math.abs(df)<6){dir=df>=0?"BUY":"SELL";st=35+Math.abs(df);}
+  else if(df>0){dir="BUY";st=Math.min(95,48+df*1.1);}
+  else{dir="SELL";st=Math.min(95,48+Math.abs(df)*1.1);}
+  st=Math.round(st);
+  var slbl=st>=78?"STRONG":st>=58?"MODERATE":"WEAK";
+  var sc=st>=78?"#00c853":st>=58?"#FFD700":"#ff4444";
+  var lv=getLevels(st);
   var lot=parseFloat(document.getElementById("lotSize").value)||0.01;
-
   var entry=cur,tp1,tp2,tp3,stopL;
-  if(dir==="BUY"){
-    tp1=(entry+lvl.tp1).toFixed(2);tp2=(entry+lvl.tp2).toFixed(2);tp3=(entry+lvl.tp3).toFixed(2);stopL=(entry-lvl.sl).toFixed(2);
-  }else{
-    tp1=(entry-lvl.tp1).toFixed(2);tp2=(entry-lvl.tp2).toFixed(2);tp3=(entry-lvl.tp3).toFixed(2);stopL=(entry+lvl.sl).toFixed(2);
-  }
-
-  var tp1G=calcGbp(lvl.tp1,lot);
-  var tp2G=calcGbp(lvl.tp2,lot);
-  var tp3G=calcGbp(lvl.tp3,lot);
-  var slG =calcGbp(lvl.sl,lot);
-
-  activeSignal={id:Date.now(),dir:dir,entry:entry,
-    tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),
-    tp1G:tp1G,tp2G:tp2G,tp3G:tp3G,slG:slG,
-    lvl:lvl,lot:lot,strength:strength,strengthLabel:sl,
-    signalType:signalType,candles:closes.length,
-    time:new Date().toLocaleTimeString(),status:"OPEN"};
-
-  // Telegram — all signals, labelled as AUTO or MANUAL
-  var emoji=dir==="BUY"?"&#129001;":"&#128308;";
-  var typeLabel=signalType==="AUTO"?"&#128992; AUTO SIGNAL":"&#128994; MANUAL SIGNAL";
-  var tgMsg=emoji+" <b>"+dir+" — XAU/USD GOLD</b>\n"
-    +typeLabel+"\n"
-    +"Strength: <b>"+sl+" ("+strength+"%)</b>\n\n"
-    +"Entry: <b>$"+entry.toFixed(2)+"</b>\n"
-    +"TP1: <b>$"+tp1+"</b> (+$"+lvl.tp1+" = +£"+tp1G+")\n"
-    +"TP2: <b>$"+tp2+"</b> (+$"+lvl.tp2+" = +£"+tp2G+")\n"
-    +"TP3: <b>$"+tp3+"</b> (+$"+lvl.tp3+" = +£"+tp3G+")\n"
-    +"Stop Loss: <b>$"+stopL+"</b> (-$"+lvl.sl+" = -£"+slG+")\n\n"
-    +"Lot: "+lot+" | EMA9: $"+e9+" | RSI: "+rsi+"\n"
-    +"Based on "+closes.length+" real 15-min candles";
-  sendTelegram(tgMsg);
-
-  // Render card
+  if(dir==="BUY"){tp1=(entry+lv.tp1).toFixed(2);tp2=(entry+lv.tp2).toFixed(2);tp3=(entry+lv.tp3).toFixed(2);stopL=(entry-lv.sl).toFixed(2);}
+  else{tp1=(entry-lv.tp1).toFixed(2);tp2=(entry-lv.tp2).toFixed(2);tp3=(entry-lv.tp3).toFixed(2);stopL=(entry+lv.sl).toFixed(2);}
+  var g1=gbp(lv.tp1,lot),g2=gbp(lv.tp2,lot),g3=gbp(lv.tp3,lot),gs=gbp(lv.sl,lot);
+  activeSignal={id:Date.now(),dir:dir,entry:entry,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(stopL),g1:g1,g2:g2,g3:g3,gs:gs,lv:lv,lot:lot,st:st,slbl:slbl,stype:stype,n:cl.length,time:new Date().toLocaleTimeString(),status:"OPEN"};
+  // Telegram
+  var em=dir==="BUY"?"[BUY]":"[SELL]";
+  var tl=stype==="AUTO"?"[AUTO SIGNAL]":"[MANUAL SIGNAL]";
+  sendTg(em+" <b>"+dir+" XAU/USD GOLD</b>\n"+tl+"\nStrength: <b>"+slbl+" ("+st+"%)</b>\n\nEntry: <b>$"+entry.toFixed(2)+"</b>\nTP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\nTP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\nTP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\nStop Loss: $"+stopL+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+cl.length+" real 15-min candles");
+  // Render
   var vEl=document.getElementById("verdict");
   vEl.style.display="block";vEl.className="verdict "+dir;
   document.getElementById("verdictDir").textContent=dir;
   document.getElementById("verdictDir").className="verdict-direction "+dir;
-  document.getElementById("verdictSub").textContent=(dir==="BUY"?"▲ Buy at $":"▼ Sell at $")+entry.toFixed(2)+" · "+signalType+" · "+closes.length+" candles";
-  document.getElementById("strengthFill").style.cssText="width:"+strength+"%;background:"+sc;
-  document.getElementById("strengthPct").textContent=strength+"%";
-  document.getElementById("strengthText").textContent=sl+" Signal";
+  document.getElementById("verdictSub").textContent=(dir==="BUY"?"Buy at $":"Sell at $")+entry.toFixed(2)+" | "+stype+" | "+cl.length+" candles";
+  document.getElementById("strengthFill").style.cssText="width:"+st+"%;background:"+sc;
+  document.getElementById("strengthPct").textContent=st+"%";
+  document.getElementById("strengthText").textContent=slbl+" Signal";
   document.getElementById("strengthText").style.color=sc;
-  document.getElementById("reasonList").innerHTML=reasons.map(function(r){
-    return "<div class='reason-item "+r.c+"'><span style='flex-shrink:0'>"+(r.c==="pos"?"&#10003;":r.c==="neg"?"&#10007;":"&#9679;")+"</span><span>"+r.t+"</span></div>";
-  }).join("");
+  document.getElementById("reasonList").innerHTML=rs.map(function(r){return "<div class='reason-item "+r.c+"'><span>"+(r.c==="pos"?"+ ":r.c==="neg"?"- ":"* ")+"</span><span>"+r.t+"</span></div>";}).join("");
   document.getElementById("entryVal").textContent="$"+entry.toFixed(2);
-  document.getElementById("tp1Val").textContent="$"+tp1;document.getElementById("tp1Pts").textContent="+$"+lvl.tp1+" move";document.getElementById("tp1Gbp").textContent="+&#163;"+tp1G;
-  document.getElementById("tp2Val").textContent="$"+tp2;document.getElementById("tp2Pts").textContent="+$"+lvl.tp2+" move";document.getElementById("tp2Gbp").textContent="+&#163;"+tp2G;
-  document.getElementById("tp3Val").textContent="$"+tp3;document.getElementById("tp3Pts").textContent="+$"+lvl.tp3+" move";document.getElementById("tp3Gbp").textContent="+&#163;"+tp3G;
+  document.getElementById("tp1Val").textContent="$"+tp1;
+  document.getElementById("tp1Pts").textContent="+$"+lv.tp1+" move";
+  document.getElementById("tp1Gbp").textContent="+"+P+g1+" profit";
+  document.getElementById("tp2Val").textContent="$"+tp2;
+  document.getElementById("tp2Pts").textContent="+$"+lv.tp2+" move";
+  document.getElementById("tp2Gbp").textContent="+"+P+g2+" profit";
+  document.getElementById("tp3Val").textContent="$"+tp3;
+  document.getElementById("tp3Pts").textContent="+$"+lv.tp3+" move";
+  document.getElementById("tp3Gbp").textContent="+"+P+g3+" profit";
   document.getElementById("slVal").textContent="$"+stopL;
-  document.getElementById("slPts").textContent="-$"+lvl.sl+" move";
-  document.getElementById("slGbp").textContent="-&#163;"+slG+" max loss";
+  document.getElementById("slPts").textContent="-$"+lv.sl+" move";
+  document.getElementById("slGbp").textContent="-"+P+gs+" max loss";
   document.getElementById("closePrice").value="";
   addToLog(activeSignal);renderLog();
   window.scrollTo({top:document.getElementById("verdict").offsetTop-10,behavior:"smooth"});
 }
-
 function closeSignal(result){
   if(!activeSignal){alert("No active signal.");return;}
-  var exitVal=parseFloat(document.getElementById("closePrice").value);
-  if(!exitVal||exitVal<100){alert("Enter a valid exit price.");return;}
-  var move=activeSignal.dir==="BUY"?parseFloat((exitVal-activeSignal.entry).toFixed(2)):parseFloat((activeSignal.entry-exitVal).toFixed(2));
-  var pnl=parseFloat(calcGbp(Math.abs(move),activeSignal.lot));
-  if(move<0)pnl=-pnl;
-  activeSignal.status=result;activeSignal.exitPrice=exitVal;activeSignal.pnl=pnl;activeSignal.move=move;
+  var ev=parseFloat(document.getElementById("closePrice").value);
+  if(!ev||ev<100){alert("Enter a valid exit price.");return;}
+  var mv=activeSignal.dir==="BUY"?parseFloat((ev-activeSignal.entry).toFixed(2)):parseFloat((activeSignal.entry-ev).toFixed(2));
+  var pnl=parseFloat((mv*activeSignal.lot*100*GBPRATE).toFixed(2));
+  activeSignal.status=result;activeSignal.exitPrice=ev;activeSignal.pnl=pnl;
   if(result==="WIN")wins++;else losses++;
   totalPnl+=pnl;
   for(var i=0;i<log.length;i++){if(log[i].id===activeSignal.id){log[i]=JSON.parse(JSON.stringify(activeSignal));break;}}
-  var emoji=result==="WIN"?"&#9989;":"&#10060;";
-  sendTelegram(emoji+" <b>TRADE "+result+"</b> — XAU/USD\n"+activeSignal.dir+" | Entry: $"+activeSignal.entry.toFixed(2)+" Exit: $"+exitVal.toFixed(2)+"\nMove: "+(move>=0?"+":"")+move.toFixed(2)+" pts | P&L: <b>"+(pnl>=0?"+":"-")+GBP_SIGN+Math.abs(pnl).toFixed(2)+"</b>");
+  var em=result==="WIN"?"[WIN]":"[LOSS]";
+  sendTg(em+" <b>TRADE "+result+"</b> XAU/USD\n"+activeSignal.dir+" | Entry: $"+activeSignal.entry.toFixed(2)+" Exit: $"+ev.toFixed(2)+"\nMove: "+(mv>=0?"+":"")+mv.toFixed(2)+" pts | P&L: "+(pnl>=0?"+":"")+P+pnl.toFixed(2));
   updateStats();renderLog();
   document.getElementById("verdict").style.display="none";
   activeSignal=null;
 }
-
 function addToLog(sig){log=log.filter(function(l){return l.id!==sig.id;});log.unshift(JSON.parse(JSON.stringify(sig)));if(log.length>50)log.pop();}
-
 function renderLog(){
   var el=document.getElementById("logList");
   if(!log.length){el.innerHTML="<div class='log-empty'>No signals yet</div>";return;}
   el.innerHTML=log.map(function(s){
     var sc2=s.status==="WIN"?"win":s.status==="LOSS"?"loss":"open";
     var st2=s.status==="WIN"?"WIN":s.status==="LOSS"?"LOSS":"OPEN";
-    var col=s.strength>=78?"#00c853":s.strength>=58?"#FFD700":"#ff4444";
+    var col=s.st>=78?"#00c853":s.st>=58?"#FFD700":"#ff4444";
     var pnl="";
     if(s.status!=="OPEN"){
       var pc=s.pnl>=0?"#00c853":"#ff4444";
-      pnl="<div class='log-pnl' style='color:"+pc+"'>"+(s.pnl>=0?"+":"-")+GBP_SIGN+Math.abs(s.pnl).toFixed(2)+" | exit $"+s.exitPrice.toFixed(2)+"</div>";
+      pnl="<div class='log-pnl' style='color:"+pc+"'>"+(s.pnl>=0?"+":"")+P+Math.abs(s.pnl).toFixed(2)+" | exit $"+s.exitPrice.toFixed(2)+"</div>";
     }
     return "<div class='log-item "+sc2+"'>"
-      +"<div class='log-row1'>"
-        +"<div style='display:flex;gap:6px;align-items:center'>"
-          +"<span class='log-badge "+s.dir+"'>"+s.dir+"</span>"
-          +"<span style='color:#FFD700;font-size:13px;font-weight:700'>$"+s.entry.toFixed(2)+"</span>"
-          +"<span style='color:#888;font-size:10px;'>"+s.signalType+"</span>"
-        +"</div>"
-        +"<span class='log-status "+sc2+"'>"+st2+"</span>"
-      +"</div>"
-      +"<div class='log-levels'>"
-        +"<span>TP1 <b>$"+s.tp1.toFixed(2)+"</b></span>"
-        +"<span>TP2 <b>$"+s.tp2.toFixed(2)+"</b></span>"
-        +"<span>TP3 <b>$"+s.tp3.toFixed(2)+"</b></span>"
-        +"<span>SL <b style='color:#ff4444'>$"+s.sl.toFixed(2)+"</b></span>"
-      +"</div>"
-      +"<div class='log-str' style='color:"+col+"'>"+s.strengthLabel+" "+s.strength+"% | lot "+s.lot+"</div>"
-      +pnl
-      +"<div class='log-time'>"+s.time+"</div>"
-    +"</div>";
+      +"<div class='log-row1'><div style='display:flex;gap:6px;align-items:center'><span class='log-badge "+s.dir+"'>"+s.dir+"</span><span style='color:#FFD700;font-size:13px;font-weight:700'>$"+s.entry.toFixed(2)+"</span><span style='color:#888;font-size:10px'>"+s.stype+"</span></div><span class='log-status "+sc2+"'>"+st2+"</span></div>"
+      +"<div class='log-levels'><span>TP1 <b>$"+s.tp1.toFixed(2)+"</b></span><span>TP2 <b>$"+s.tp2.toFixed(2)+"</b></span><span>TP3 <b>$"+s.tp3.toFixed(2)+"</b></span><span>SL <b style='color:#ff4444'>$"+s.sl.toFixed(2)+"</b></span></div>"
+      +"<div class='log-str' style='color:"+col+"'>"+s.slbl+" "+s.st+"% | lot "+s.lot+" | "+P+s.g2+" at TP2</div>"
+      +pnl+"<div class='log-time'>"+s.time+"</div></div>";
   }).join("");
 }
-
 function updateStats(){
   var total=wins+losses;
   document.getElementById("statWins").textContent=wins;
   document.getElementById("statLoss").textContent=losses;
   document.getElementById("statRate").textContent=total>0?Math.round(wins/total*100)+"%":"--";
   var pEl=document.getElementById("statPnl");
-  pEl.textContent=(totalPnl>=0?"+":"-")+GBP_SIGN+Math.abs(totalPnl).toFixed(2);
+  pEl.textContent=(totalPnl>=0?"+":"")+P+Math.abs(totalPnl).toFixed(2);
   pEl.style.color=totalPnl>=0?"#00c853":"#ff4444";
 }
-
 function clearLog(){if(!confirm("Clear all history?"))return;log=[];wins=0;losses=0;totalPnl=0;updateStats();renderLog();}
-function setBusy(on){document.getElementById("signalBtn").disabled=on;document.getElementById("spinner").style.display=on?"block":"none";document.getElementById("signalBtnText").textContent=on?"Fetching live data...":"GET GOLD SIGNAL";}
+function setBusy(on){document.getElementById("signalBtn").disabled=on;document.getElementById("spinner").style.display=on?"block":"none";document.getElementById("signalBtnText").textContent=on?"Fetching...":"GET GOLD SIGNAL";}
 function setStatus(txt,col){document.getElementById("statusText").textContent=txt;document.getElementById("statusDot").style.background=col||"#555";}
 function setInd(id,txt,col){var el=document.getElementById(id);if(!el)return;el.textContent=txt;if(col)el.style.color=col;}
 function showErr(msg){var el=document.getElementById("errBox");el.textContent=msg;el.style.display="block";}
 function hideErr(){document.getElementById("errBox").style.display="none";}
-
 window.onload=loadAll;
 </script>
 
