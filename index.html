@@ -318,7 +318,7 @@ function toggleAuto(){
 async function autoCheck(){
   if(!API_KEY)return;
   try{
-    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&apikey="+API_KEY;
+    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&type=physical_currency&apikey="+API_KEY;
     var resp=await fetch(url);
     var data=await resp.json();
     if(data.status==="error"||!data.values||!data.values.length)return;
@@ -326,7 +326,11 @@ async function autoCheck(){
     var closes=candles.map(function(c){return parseFloat(c.close);});
     var highs=candles.map(function(c){return parseFloat(c.high);});
     var lows=candles.map(function(c){return parseFloat(c.low);});
-    var cur=closes[closes.length-1];
+    // Sanity check — if price looks wrong or ATR too small, reject it
+  var cur=closes[closes.length-1];
+  if(cur < 1000){
+    throw new Error("Data error — price $"+cur.toFixed(2)+" looks wrong. Twelve Data may be returning the wrong instrument. Try again or check your API key.");
+  }
     var result=calcStrength(closes,highs,lows,cur);
     if(result.strength>=78){
       setStatus("★ Strong signal detected — firing!","#00c853");
@@ -347,7 +351,7 @@ async function getSignal(){
   document.getElementById("verdict").style.display="none";
   try{
     setStatus("Fetching live XAU/USD data...","#FFD700");
-    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&apikey="+API_KEY;
+    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&type=physical_currency&apikey="+API_KEY;
     var resp=await fetch(url);
     var data=await resp.json();
     if(data.status==="error"||data.code)throw new Error(data.message||"API error — check your key");
@@ -394,6 +398,8 @@ function calcMACD(arr){
 function calcStrength(closes,highs,lows,cur){
   var e9=calcEMA(closes,9),e21=calcEMA(closes,21);
   var rsi=calcRSI(closes,14),atr=calcATR(highs,lows,closes,14),macd=calcMACD(closes);
+  // ATR floor — gold 15-min ATR should never be below $3
+  atr=Math.max(atr, cur*0.003);
   var hour=new Date().getHours();
   var bull=0,bear=0;
   if(e9>e21&&cur>e9)bull+=22;else if(e9<e21&&cur<e9)bear+=22;else if(e9>e21)bull+=10;else bear+=10;
