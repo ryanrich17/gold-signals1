@@ -129,7 +129,7 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <body>
 <header>
   <div style="display:flex;align-items:center;gap:12px;">
-    <img src="IMG_4364.jpeg" alt="Ryan & Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;">
+    <img src="IMG_4364.jpeg" alt="Ryan &amp; Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;object-fit:cover;" onerror="this.style.display='none'">
     <div><h1>GOLD SIGNALS &mdash; XAU/USD</h1><div class="sub">Ryan &amp; Sam &middot; Live price &middot; Telegram alerts &middot; Auto signals</div></div>
   </div>
 </header>
@@ -339,8 +339,9 @@ function loadAll(){
 
 // LIVE FEED
 function startLiveFeed(){
-  // Price only updates when a signal is fetched — no continuous polling
-  setStatus("API key loaded — tap Get Signal to fetch live price","#00c853");
+  // Fetch price once on load, then again with each signal
+  fetchLive();
+  setStatus("API key loaded — tap Get Signal for analysis","#00c853");
 }
 async function fetchLive(){
   if(!API_KEY)return;
