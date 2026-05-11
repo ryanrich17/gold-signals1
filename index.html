@@ -129,7 +129,7 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <body>
 <header>
   <div style="display:flex;align-items:center;gap:12px;">
-    <img src="IMG_4364.jpeg" alt="Ryan &amp; Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;object-fit:cover;" onerror="this.style.display='none'">
+    <img src="https://ryanrich17.github.io/gold-signals1/IMG_4364.jpeg" alt="Ryan &amp; Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;object-fit:cover;" onerror="this.style.display='none'">
     <div><h1>GOLD SIGNALS &mdash; XAU/USD</h1><div class="sub">Ryan &amp; Sam &middot; Live price &middot; Telegram alerts &middot; Auto signals</div></div>
   </div>
 </header>
@@ -339,9 +339,50 @@ function loadAll(){
 
 // LIVE FEED
 function startLiveFeed(){
-  // Fetch price once on load, then again with each signal
-  fetchLive();
+  fetchLiveCard();
   setStatus("API key loaded — tap Get Signal for analysis","#00c853");
+}
+
+async function fetchLiveCard(){
+  if(!API_KEY)return;
+  try{
+    // Use time_series to get price + populate live card
+    var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&exchange=OANDA&apikey="+API_KEY;
+    var r=await fetch(url);var d=await r.json();
+    if(d.status==="error"||!d.values||!d.values.length)return;
+    var candles=d.values.reverse();
+    var closes=candles.map(function(x){return parseFloat(x.close);});
+    var highs=candles.map(function(x){return parseFloat(x.high);});
+    var lows=candles.map(function(x){return parseFloat(x.low);});
+    var cur=closes[closes.length-1];
+    if(cur<1000)return;
+    candleCloses=closes;
+    liveHigh=Math.max.apply(null,highs);
+    liveLow=Math.min.apply(null,lows);
+    liveOpen=closes[0];
+    liveTicks.push(cur);
+    updateLiveCard(cur);
+    drawChart();
+  }catch(e){}
+}
+
+function updateLiveCard(p){
+  var pct=((p-liveOpen)/liveOpen*100).toFixed(2);
+  var isUp=p>=(liveTicks.length>1?liveTicks[liveTicks.length-2]:p);
+  var el=document.getElementById("livePrice");
+  el.textContent="$"+p.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.style.color="#FFD700";
+  var ce=document.getElementById("livePriceChg");
+  ce.textContent=(pct>=0?"▲ +":"▼ ")+Math.abs(pct)+"% today";
+  ce.className=pct>=0?"up":"dn";
+  document.getElementById("liveHigh").textContent="$"+liveHigh.toFixed(2);
+  document.getElementById("liveLow").textContent="$"+liveLow.toFixed(2);
+  var chEl=document.getElementById("liveChange");
+  chEl.textContent=(pct>=0?"+":"")+pct+"%";
+  chEl.className=pct>=0?"up":"dn";
+  document.getElementById("liveUpdated").textContent=new Date().toLocaleTimeString();
+  document.getElementById("liveDot").style.background="#00c853";
+  document.getElementById("liveDot").classList.remove("pulsing");
 }
 async function fetchLive(){
   if(!API_KEY)return;
