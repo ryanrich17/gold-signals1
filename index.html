@@ -282,7 +282,7 @@ var API_KEY="",TG_TOKEN="",TG_CHAT="";
 var activeSignal=null;
 var log=[],wins=0,losses=0,totalPnl=0;
 var autoTimer=null,liveTimer=null;
-var AUTO_INTERVAL=1200000,LIVE_INTERVAL=10000;
+var AUTO_INTERVAL=1200000,LIVE_INTERVAL=0; // no live polling — price updates on signal fetch only
 var GBP=0.79,P="£";
 var liveHigh=0,liveLow=999999,liveOpen=0;
 var liveTicks=[],candleCloses=[];
@@ -336,9 +336,8 @@ function loadAll(){
 
 // LIVE FEED
 function startLiveFeed(){
-  if(liveTimer)clearInterval(liveTimer);
-  fetchLive();
-  liveTimer=setInterval(fetchLive,LIVE_INTERVAL);
+  // Price only updates when a signal is fetched — no continuous polling
+  setStatus("API key loaded — tap Get Signal to fetch live price","#00c853");
 }
 async function fetchLive(){
   if(!API_KEY)return;
