@@ -129,7 +129,7 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <body>
 <header>
   <div style="display:flex;align-items:center;gap:12px;">
-    <img src="https://ryanrich17.github.io/gold-signals1/IMG_4364.jpeg" alt="Ryan &amp; Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;object-fit:cover;" onerror="this.style.display='none'">
+    <img src="./IMG_4364.jpeg" alt="Ryan &amp; Sam" style="width:52px;height:52px;border-radius:50%;border:2px solid #FFD700;object-fit:cover;" onerror="this.style.display='none'">
     <div><h1>GOLD SIGNALS &mdash; XAU/USD</h1><div class="sub">Ryan &amp; Sam &middot; Live price &middot; Telegram alerts &middot; Auto signals</div></div>
   </div>
 </header>
@@ -339,8 +339,9 @@ function loadAll(){
 
 // LIVE FEED
 function startLiveFeed(){
+  setStatus("API key loaded — tap Get Signal for live price","#FFD700");
+  // Populate price card from candles on load
   fetchLiveCard();
-  setStatus("API key loaded — tap Get Signal for analysis","#00c853");
 }
 
 async function fetchLiveCard(){
@@ -534,6 +535,14 @@ function atrF(h,l,c,p){p=Math.min(p,c.length-1);var t=[];for(var i=c.length-p;i<
 function macdF(a){var mv=[],k12=2/13,k26=2/27,e12=a[0],e26=a[0];for(var i=1;i<a.length;i++){e12=a[i]*k12+e12*(1-k12);e26=a[i]*k26+e26*(1-k26);mv.push(parseFloat((e12-e26).toFixed(2)));}var ml=mv[mv.length-1],pm=mv.length>=2?mv[mv.length-2]:ml,sg=ema(mv,Math.min(9,mv.length));return{ml:ml,sg:parseFloat(sg.toFixed(2)),h:parseFloat((ml-sg).toFixed(2)),cu:pm<=0&&ml>0,cd:pm>=0&&ml<0,az:ml>0};}
 
 function calcStr(cl,hi,lo,cur){
+  // Always update live price card when signal fires
+  updateLiveCard(cur);
+  candleCloses=cl;
+  liveHigh=Math.max.apply(null,hi);
+  liveLow=Math.min.apply(null,lo);
+  liveOpen=cl[0];
+  drawChart();
+
   var e9=ema(cl,9),e21=ema(cl,21),r=rsiF(cl,14),a=atrF(hi,lo,cl,14),m=macdF(cl),hr=new Date().getHours();
   var b=0,s=0;
   if(e9>e21&&cur>e9)b+=22;else if(e9<e21&&cur<e9)s+=22;else if(e9>e21)b+=10;else s+=10;
