@@ -167,29 +167,41 @@ h1{font-size:18px;color:#FFD700;letter-spacing:1px;}
 <!-- API KEY -->
 
 <div class="api-setup">
-  <div class="api-title">Twelve Data API Key</div>
-  <div class="api-sub">Free at <b>twelvedata.com</b> &mdash; saved on this device only.</div>
-  <div class="api-row">
-    <input id="apiKeyInput" type="password" placeholder="Paste API key">
-    <button class="btn-save" onclick="saveKey()">Save</button>
+  <div class="api-title" onclick="toggleSection('apiBody')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+    <span>Twelve Data API Key</span>
+    <span id="apiArrow" style="font-size:16px;color:#FFD700;">&#9660;</span>
   </div>
-  <div class="api-ok" id="apiOk">API key saved &mdash; live feed starting</div>
+  <div id="apiBody" style="display:none;">
+    <div class="api-sub" style="margin-top:8px;">Free at <b>twelvedata.com</b> &mdash; saved on this device only.</div>
+    <div class="api-row">
+      <input id="apiKeyInput" type="password" placeholder="Paste API key">
+      <button class="btn-save" onclick="saveKey()">Save</button>
+    </div>
+    <div class="api-ok" id="apiOk">API key saved &mdash; live feed starting</div>
+  </div>
+  <div id="apiOkCollapsed" style="display:none;font-size:11px;color:#00c853;margin-top:6px;">&#10003; API key configured</div>
 </div>
 
 <!-- TELEGRAM -->
 
 <div class="api-setup" style="border-color:#00bcd4;">
-  <div class="api-title" style="color:#00bcd4;">Telegram Alerts</div>
-  <div class="api-sub">Bot Token from @BotFather &middot; Channel ID: -1003981765939</div>
-  <div class="api-row">
-    <input id="tgTokenInput" type="password" placeholder="Bot Token" style="border-color:#00bcd466;">
-    <button class="btn-save" onclick="saveTg()" style="background:linear-gradient(135deg,#00bcd4,#006080);">Save</button>
+  <div class="api-title" onclick="toggleSection('tgBody')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#00bcd4;">
+    <span>Telegram Alerts</span>
+    <span id="tgArrow" style="font-size:16px;color:#00bcd4;">&#9660;</span>
   </div>
-  <div class="api-row">
-    <input id="tgChatInput" type="text" placeholder="Chat ID e.g. -1003981765939" style="border-color:#00bcd466;">
-    <button class="btn-save" onclick="testTg()" style="background:#0a0e00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
+  <div id="tgBody" style="display:none;">
+    <div class="api-sub" style="margin-top:8px;">Bot Token from @BotFather &middot; Channel ID: -1003981765939</div>
+    <div class="api-row">
+      <input id="tgTokenInput" type="password" placeholder="Bot Token" style="border-color:#00bcd466;">
+      <button class="btn-save" onclick="saveTg()" style="background:linear-gradient(135deg,#00bcd4,#006080);">Save</button>
+    </div>
+    <div class="api-row">
+      <input id="tgChatInput" type="text" placeholder="Chat ID e.g. -1003981765939" style="border-color:#00bcd466;">
+      <button class="btn-save" onclick="testTg()" style="background:#0a0e00;color:#00bcd4;border:1px solid #00bcd444;">Test</button>
+    </div>
+    <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">Telegram ready</div>
   </div>
-  <div class="api-ok" id="tgOk" style="border-color:#00bcd433;color:#00bcd4;">Telegram ready</div>
+  <div id="tgOkCollapsed" style="display:none;font-size:11px;color:#00bcd4;margin-top:6px;">&#10003; Telegram configured</div>
 </div>
 
 <!-- LOT + THRESHOLD -->
@@ -335,6 +347,7 @@ function loadAll(){
   TG_CHAT=localStorage.getItem("td_tg_chat")||"";
   if(API_KEY){document.getElementById("apiOk").style.display="block";setStatus("API key loaded — starting live feed","#00c853");startLiveFeed();}
   if(TG_TOKEN&&TG_CHAT)document.getElementById("tgOk").style.display="block";
+  autoCollapseSections();
 }
 
 // LIVE FEED
@@ -469,7 +482,39 @@ async function fetchCandles(){
 }
 
 // AUTO
-function toggleAuto(){
+function toggleSection(id){
+  var body=document.getElementById(id);
+  var isApi=id==="apiBody";
+  var arrow=document.getElementById(isApi?"apiArrow":"tgArrow");
+  var collapsed=document.getElementById(isApi?"apiOkCollapsed":"tgOkCollapsed");
+  if(body.style.display==="none"){
+    body.style.display="block";
+    arrow.innerHTML="&#9650;";
+    if(collapsed)collapsed.style.display="none";
+  }else{
+    body.style.display="none";
+    arrow.innerHTML="&#9660;";
+    // Show collapsed status if configured
+    if(isApi&&API_KEY&&collapsed)collapsed.style.display="block";
+    if(!isApi&&TG_TOKEN&&TG_CHAT&&collapsed)collapsed.style.display="block";
+  }
+}
+
+function autoCollapseSections(){
+  // Auto collapse if already configured
+  if(API_KEY){
+    document.getElementById("apiBody").style.display="none";
+    document.getElementById("apiArrow").innerHTML="&#9660;";
+    document.getElementById("apiOkCollapsed").style.display="block";
+    document.getElementById("apiOk").style.display="block";
+  }
+  if(TG_TOKEN&&TG_CHAT){
+    document.getElementById("tgBody").style.display="none";
+    document.getElementById("tgArrow").innerHTML="&#9660;";
+    document.getElementById("tgOkCollapsed").style.display="block";
+    document.getElementById("tgOk").style.display="block";
+  }
+}
   var btn=document.getElementById("autoBtn");
   if(autoTimer){
     clearInterval(autoTimer);autoTimer=null;
