@@ -319,7 +319,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 </div>
-<div class="footer">XAU/USD &mdash; 15-min candles &middot; 90 candles &middot; ~22.5hrs data &middot; Educational only.</div>
+<div class="footer">XAU/USD &mdash; 15-min candles &middot; 4 hours data &middot; Educational only.</div>
 
 <script>
 var API_KEY="",TG_TOKEN="",TG_CHAT="";
@@ -462,7 +462,7 @@ async function autoCheck(){
 }
 
 async function fetchCandles(){
-  var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=90&exchange=OANDA&apikey="+API_KEY;
+  var url="https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=15min&outputsize=16&exchange=OANDA&apikey="+API_KEY;
   var r=await fetch(url);var d=await r.json();
   if(d.status==="error"||!d.values||!d.values.length)return null;
   return d.values.reverse();
@@ -538,9 +538,9 @@ function drawChart(data){
   ctx.moveTo(0,cy);ctx.lineTo(w,cy);
   ctx.strokeStyle="#FFD70055";ctx.lineWidth=1;ctx.stroke();
   ctx.setLineDash([]);
-  document.getElementById("cl1").textContent="~22.5hrs ago";
-  document.getElementById("cl2").textContent="~11hrs ago";
-  document.getElementById("chartInf").textContent="15-min candles · "+data.length+" candles · ~22.5hrs";
+  document.getElementById("cl1").textContent="4hrs ago";
+  document.getElementById("cl2").textContent="2hrs ago";
+  document.getElementById("chartInf").textContent="15-min candles · "+data.length+" candles · ~4 hours";
 }
 
 // ── MATHS ─────────────────────────────────────────────────
