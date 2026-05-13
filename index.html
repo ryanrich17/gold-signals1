@@ -212,19 +212,19 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   <div class="style-label">TRADING STYLE</div>
   <div class="style-btns">
     <div class="style-btn active" id="sScalp" onclick="setStyle('scalp')">
-      <div class="sb-icon">&#9889;</div>
+      <div class="sb-icon">⚡</div>
       <div class="sb-name">SCALP</div>
       <div class="sb-desc">Quick in/out</div>
       <div class="sb-specs">15min · 16 bars<br>TP $5-$50<br>Auto: 10min</div>
     </div>
     <div class="style-btn" id="sIntra" onclick="setStyle('intraday')">
-      <div class="sb-icon">&#128200;</div>
+      <div class="sb-icon">📈</div>
       <div class="sb-name">INTRADAY</div>
       <div class="sb-desc">Hold hours</div>
       <div class="sb-specs">1hr · 24 bars<br>TP $20-$100<br>Auto: 30min</div>
     </div>
     <div class="style-btn" id="sSwing" onclick="setStyle('swing')">
-      <div class="sb-icon">&#127754;</div>
+      <div class="sb-icon">🌊</div>
       <div class="sb-name">SWING</div>
       <div class="sb-desc">Hold days</div>
       <div class="sb-specs">4hr · 30 bars<br>TP $50-$300<br>Auto: 2hr</div>
@@ -232,16 +232,16 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   </div>
 </div>
 <div class="style-info" id="styleInfo">
-  &#9889; <strong>SCALP MODE</strong>&nbsp;<span id="styleInfoTxt">15min · 16 bars · ~4hrs · TP $5-$50</span>
+  ⚡ <strong>SCALP MODE</strong>&nbsp;<span id="styleInfoTxt">15min · 16 bars · ~4hrs · TP $5-$50</span>
 </div>
 
 <div class="panel" id="apiPanel">
   <div class="panel-hdr" onclick="togglePanel('api')">
     <div class="panel-hdr-left">
       <span class="panel-title">Twelve Data API Key</span>
-      <span class="panel-tick" id="apiTick">&#10003; Configured</span>
+      <span class="panel-tick" id="apiTick">✓ Configured</span>
     </div>
-    <span class="panel-arrow" id="apiArrow">&#9660;</span>
+    <span class="panel-arrow" id="apiArrow">▼</span>
   </div>
   <div class="panel-body" id="apiBody">
     <div class="panel-sub">Free at <b>twelvedata.com</b> &mdash; saved on this device only.</div>
@@ -249,7 +249,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
       <input id="apiKeyInput" type="password" placeholder="Paste API key">
       <button class="btn-gold" onclick="saveKey()">Save</button>
     </div>
-    <div class="ok-gold" id="apiOk">&#10003; API key saved</div>
+    <div class="ok-gold" id="apiOk">✓ API key saved</div>
   </div>
 </div>
 
@@ -257,9 +257,9 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   <div class="panel-hdr" onclick="togglePanel('tg')">
     <div class="panel-hdr-left">
       <span class="panel-title">Telegram Alerts</span>
-      <span class="panel-tick" id="tgTick">&#10003; Configured</span>
+      <span class="panel-tick" id="tgTick">✓ Configured</span>
     </div>
-    <span class="panel-arrow" id="tgArrow">&#9660;</span>
+    <span class="panel-arrow" id="tgArrow">▼</span>
   </div>
   <div class="panel-body" id="tgBody">
     <div class="panel-sub">Bot Token from @BotFather &middot; Channel ID: -1003981765939</div>
@@ -271,16 +271,16 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
       <input id="tgChatInput" type="text" placeholder="Chat ID e.g. -1003981765939">
       <button class="btn-teal-out" onclick="testTg()">Test</button>
     </div>
-    <div class="ok-teal" id="tgOk">&#10003; Telegram configured</div>
+    <div class="ok-teal" id="tgOk">✓ Telegram configured</div>
   </div>
 </div>
 
 <div class="panel bt" id="btPanel">
   <div class="panel-hdr" onclick="togglePanel('bt')">
     <div class="panel-hdr-left">
-      <span class="panel-title">&#128300; Simulated Backtest</span>
+      <span class="panel-title">🔬 Simulated Backtest</span>
     </div>
-    <span class="panel-arrow" id="btArrow">&#9660;</span>
+    <span class="panel-arrow" id="btArrow">▼</span>
   </div>
   <div class="panel-body" id="btBody">
     <div class="panel-sub">Fetches 50-100 candles and runs the signal engine across each window. Win = TP2 hit before SL within 5 bars. Conflict or low-strength signals are skipped automatically.</div>
@@ -316,7 +316,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 <div class="err-box" id="errBox"></div>
 
 <div class="conflict-box" id="conflictBox">
-  <div class="conflict-title">&#9888;&#65039; LOW CONVICTION &mdash; MIXED SIGNALS</div>
+  <div class="conflict-title">⚠️ LOW CONVICTION &mdash; MIXED SIGNALS</div>
   <div class="conflict-sub" id="conflictTxt"></div>
 </div>
 
@@ -358,12 +358,12 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
     <div class="entry-sub">Price at time of signal</div>
   </div>
   <div class="tp-grid">
-    <div class="tp-box tp1"><div class="tl">&#127919; TP1 Safe</div><div class="tv" id="tp1v">--</div><div class="ts" id="tp1s">--</div><div class="tp" id="tp1p">--</div></div>
-    <div class="tp-box tp2"><div class="tl">&#128176; TP2 Target</div><div class="tv" id="tp2v">--</div><div class="ts" id="tp2s">--</div><div class="tp" id="tp2p">--</div></div>
-    <div class="tp-box tp3"><div class="tl">&#128640; TP3 Max</div><div class="tv" id="tp3v">--</div><div class="ts" id="tp3s">--</div><div class="tp" id="tp3p">--</div></div>
+    <div class="tp-box tp1"><div class="tl">🎯 TP1 Safe</div><div class="tv" id="tp1v">--</div><div class="ts" id="tp1s">--</div><div class="tp" id="tp1p">--</div></div>
+    <div class="tp-box tp2"><div class="tl">💰 TP2 Target</div><div class="tv" id="tp2v">--</div><div class="ts" id="tp2s">--</div><div class="tp" id="tp2p">--</div></div>
+    <div class="tp-box tp3"><div class="tl">🚀 TP3 Max</div><div class="tv" id="tp3v">--</div><div class="ts" id="tp3s">--</div><div class="tp" id="tp3p">--</div></div>
   </div>
   <div class="sl-box">
-    <div class="tl">&#128721; STOP LOSS</div>
+    <div class="tl">🛑 STOP LOSS</div>
     <div class="tv" id="slv">--</div>
     <div class="ts" id="sls">--</div>
     <div class="tp" id="slp">--</div>
@@ -400,11 +400,11 @@ var autoTimer=null,candleCloses=[],currentStyle="scalp";
 var GBP=0.79,P="\u00a3";
 
 var STYLES={
-  scalp:{name:"SCALP",icon:"&#9889;",interval:"15min",bars:16,btBars:90,autoMs:600000,autoLbl:"10min",dataDesc:"~4hrs",tpDesc:"$5-$50",
+  scalp:{name:"SCALP",icon:"⚡",interval:"15min",bars:16,btBars:90,autoMs:600000,autoLbl:"10min",dataDesc:"~4hrs",tpDesc:"$5-$50",
     lvl:function(s){return s>=85?{tp1:12,tp2:25,tp3:50,sl:10}:s>=70?{tp1:8,tp2:18,tp3:35,sl:8}:{tp1:5,tp2:10,tp3:20,sl:6};}},
-  intraday:{name:"INTRADAY",icon:"&#128200;",interval:"1h",bars:24,btBars:90,autoMs:1800000,autoLbl:"30min",dataDesc:"~24hrs",tpDesc:"$20-$100",
+  intraday:{name:"INTRADAY",icon:"📈",interval:"1h",bars:24,btBars:90,autoMs:1800000,autoLbl:"30min",dataDesc:"~24hrs",tpDesc:"$20-$100",
     lvl:function(s){return s>=85?{tp1:35,tp2:70,tp3:120,sl:28}:s>=70?{tp1:22,tp2:50,tp3:90,sl:20}:{tp1:12,tp2:28,tp3:55,sl:12};}},
-  swing:{name:"SWING",icon:"&#127754;",interval:"4h",bars:30,btBars:90,autoMs:7200000,autoLbl:"2hr",dataDesc:"~5 days",tpDesc:"$50-$300",
+  swing:{name:"SWING",icon:"🌊",interval:"4h",bars:30,btBars:90,autoMs:7200000,autoLbl:"2hr",dataDesc:"~5 days",tpDesc:"$50-$300",
     lvl:function(s){return s>=85?{tp1:80,tp2:160,tp3:300,sl:60}:s>=70?{tp1:50,tp2:110,tp3:200,sl:40}:{tp1:28,tp2:65,tp3:120,sl:25};}}
 };
 
@@ -429,14 +429,14 @@ function togglePanel(w){
   var b=document.getElementById(map[w][0]),a=document.getElementById(map[w][1]);
   var open=b.classList.contains("open");
   b.classList.toggle("open",!open);
-  a.innerHTML=open?"&#9660;":"&#9650;";
+  a.innerHTML=open?"▼":"▲";
 }
 
 function autoCollapse(){
   if(APIKEY){document.getElementById("apiTick").style.display="inline";}
-  else{document.getElementById("apiBody").classList.add("open");document.getElementById("apiArrow").innerHTML="&#9650;";}
+  else{document.getElementById("apiBody").classList.add("open");document.getElementById("apiArrow").innerHTML="▲";}
   if(TGTOKEN&&TGCHAT){document.getElementById("tgTick").style.display="inline";}
-  else{document.getElementById("tgBody").classList.add("open");document.getElementById("tgArrow").innerHTML="&#9650;";}
+  else{document.getElementById("tgBody").classList.add("open");document.getElementById("tgArrow").innerHTML="▲";}
 }
 
 function saveKey(){
@@ -447,7 +447,7 @@ function saveKey(){
   document.getElementById("apiOk").style.display="block";
   document.getElementById("apiTick").style.display="inline";
   document.getElementById("apiBody").classList.remove("open");
-  document.getElementById("apiArrow").innerHTML="&#9660;";
+  document.getElementById("apiArrow").innerHTML="▼";
   setStatus("API key saved","#00c853");
 }
 
@@ -460,7 +460,7 @@ function saveTg(){
     document.getElementById("tgOk").style.display="block";
     document.getElementById("tgTick").style.display="inline";
     document.getElementById("tgBody").classList.remove("open");
-    document.getElementById("tgArrow").innerHTML="&#9660;";
+    document.getElementById("tgArrow").innerHTML="▼";
   }
 }
 
@@ -673,7 +673,7 @@ function buildSignal(cl,hi,lo,cur,stype){
   var g1=gbp(lv.tp1,lot),g2=gbp(lv.tp2,lot),g3=gbp(lv.tp3,lot),gs=gbp(lv.sl,lot);
   activeSig={id:Date.now(),dir:dir,entry:cur,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(sl2),g1:g1,g2:g2,g3:g3,gs:gs,lv:lv,lot:lot,st:st,slbl:slbl,stype:stype,style:c.name,conflict:cf.conflict,time:new Date().toLocaleTimeString(),status:"OPEN"};
   var em=dir==="BUY"?"\uD83D\uDFE2":"\uD83D\uDD34";
-  var tl=stype==="AUTO"?"\uD83D\uDFE0 AUTO":"&#9995; MANUAL";
+  var tl=stype==="AUTO"?"\uD83D\uDFE0 AUTO":"✋ MANUAL";
   var cn=cf.conflict?"\n\u26a0\ufe0f LOW CONVICTION: "+cf.reasons.join("; "):"";
   sendTg(em+" <b>"+dir+" \u2014 XAU/USD GOLD</b>\n"+tl+" \u00b7 "+c.name+"\nStrength: <b>"+slbl+" ("+st+"%)</b>"+cn+"\n\nEntry: <b>$"+cur.toFixed(2)+"</b>\nTP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\nTP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\nTP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\nSL: $"+sl2+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+c.interval+" | "+cl.length+" bars | "+c.dataDesc);
   if(cf.conflict){document.getElementById("conflictBox").style.display="block";document.getElementById("conflictTxt").textContent=cf.reasons.join(" \u00b7 ")+" \u2014 consider waiting for a cleaner setup.";}
