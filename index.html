@@ -675,7 +675,7 @@ function buildSignal(cl,hi,lo,cur,stype){
   var em=dir==="BUY"?"\uD83D\uDFE2":"\uD83D\uDD34";
   var tl=stype==="AUTO"?"\uD83D\uDFE0 AUTO":"✋ MANUAL";
   var cn=cf.conflict?"\n\u26a0\ufe0f LOW CONVICTION: "+cf.reasons.join("; "):"";
-  sendTg(em+" <b>"+dir+" \u2014 XAU/USD GOLD</b>\n"+tl+" \u00b7 "+c.name+"\nStrength: <b>"+slbl+" ("+st+"%)</b>"+cn+"\n\nEntry: <b>$"+cur.toFixed(2)+"</b>\n🎯 TP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\n💰 TP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\n🚀 TP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\n🛑 SL: $"+sl2+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+c.interval+" | "+cl.length+" bars | "+c.dataDesc);
+  sendTg(em+" <b>"+dir+" — XAU/USD GOLD</b>\n"+tl+" · "+c.name+"\nStrength: <b>"+slbl+" ("+st+"%)</b>"+cn+"\n\nEntry: <b>$"+cur.toFixed(2)+"</b>\n🎯 TP1: $"+tp1+" (+$"+lv.tp1+" = +"+P+g1+")\n💰 TP2: $"+tp2+" (+$"+lv.tp2+" = +"+P+g2+")\n🚀 TP3: $"+tp3+" (+$"+lv.tp3+" = +"+P+g3+")\n🛑 SL: $"+sl2+" (-$"+lv.sl+" = -"+P+gs+")\n\nLot: "+lot+" | EMA9: $"+e9+" | RSI: "+r+"\n"+c.interval+" | "+cl.length+" bars | "+c.dataDesc);
   if(cf.conflict){document.getElementById("conflictBox").style.display="block";document.getElementById("conflictTxt").textContent=cf.reasons.join(" \u00b7 ")+" \u2014 consider waiting for a cleaner setup.";}
   else document.getElementById("conflictBox").style.display="none";
   var vEl=document.getElementById("verdict");
