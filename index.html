@@ -987,7 +987,12 @@ function buildSignal(cl,hi,lo,cur,stype){
   document.getElementById("slReminderTxt").textContent="Open MT4 \u2192 long-press trade \u2192 Modify \u2192 set SL to $"+sl2;
   document.getElementById("closePrice").value="";
   addLog(activeSig);renderLog();
-  window.scrollTo({top:document.getElementById("verdict").offsetTop-10,behavior:"smooth"});
+  // Scroll so verdict is at top of viewport
+setTimeout(function(){
+  var el=document.getElementById("verdict");
+  if(el){var top=el.getBoundingClientRect().top+window.pageYOffset-10;window.scrollTo({top:top,behavior:"smooth"});}
+  else window.scrollTo({top:0,behavior:"smooth"});
+},100);
 }
 
 async function runBacktest(){
