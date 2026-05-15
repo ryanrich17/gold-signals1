@@ -40,15 +40,15 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 /* STYLE SELECTOR */
 .style-wrap{margin-bottom:14px;}
 .style-label{font-size:11px;color:#888;margin-bottom:7px;font-weight:700;letter-spacing:1px;}
-.style-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.style-btn{background:#1a1a00;border:2px solid #FFD70033;border-radius:12px;padding:10px 6px;cursor:pointer;text-align:center;transition:all 0.2s;}
+.style-btns{display:flex;gap:6px;}
+.style-btn{background:#1a1a00;border:2px solid #FFD70033;border-radius:8px;padding:7px 10px;cursor:pointer;text-align:center;transition:all 0.2s;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;}
 .style-btn.active{border-color:#FFD700;background:#2a2a00;}
-.style-btn .sb-icon{font-size:18px;margin-bottom:3px;}
+.style-btn .sb-icon{font-size:14px;}
 .style-btn .sb-name{font-size:11px;font-weight:800;color:#FFD700;}
-.style-btn .sb-desc{font-size:9px;color:#888;margin-top:2px;line-height:1.4;}
-.style-btn .sb-specs{font-size:8px;color:#555;margin-top:3px;line-height:1.6;}
-.style-btn.active .sb-desc{color:#ccc;}
-.style-btn.active .sb-specs{color:#888;}
+.style-btn .sb-desc{display:none;}
+.style-btn .sb-specs{display:none;}
+.style-btn.active .sb-desc{display:none;}
+.style-btn.active .sb-specs{display:none;}
 .style-info{background:#2a2a00;border:1px solid #FFD70044;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:11px;color:#FFD700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .style-info span{color:#888;}
 /* PANELS */
@@ -74,10 +74,10 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 .ok-gold{background:#00c85311;border:1px solid #00c85333;border-radius:8px;padding:7px 12px;margin-top:6px;font-size:12px;color:#00c853;display:none;}
 .ok-teal{background:#00bcd411;border:1px solid #00bcd433;border-radius:8px;padding:7px 12px;margin-top:6px;font-size:12px;color:#00bcd4;display:none;}
 /* LOT + RISK */
-.row-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
-.row-box{background:#1a1a00;border:1px solid #FFD70033;border-radius:12px;padding:12px 14px;flex:1;min-width:120px;display:flex;align-items:center;gap:8px;}
-.row-box label{font-size:11px;color:#FFD700;font-weight:700;white-space:nowrap;}
-.row-box input{background:#0a0e00;border:1px solid #FFD70066;color:#FFD700;padding:7px 10px;border-radius:8px;font-size:14px;font-weight:700;width:75px;text-align:center;}
+.row-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.row-box{background:#1a1a00;border:1px solid #FFD70033;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.row-box label{font-size:10px;color:#FFD700;font-weight:700;white-space:nowrap;letter-spacing:0.5px;}
+.row-box input{background:#0a0e00;border:1px solid #FFD70066;color:#FFD700;padding:6px 8px;border-radius:7px;font-size:15px;font-weight:700;width:100%;text-align:center;}
 .row-box .rn{font-size:10px;color:#888;}
 /* RISK CALCULATOR */
 .risk-card{background:#1a0a00;border:2px solid #ff8c00;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none;}
@@ -207,7 +207,40 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 .bt-right{font-size:12px;font-weight:700;}
 .footer{text-align:center;color:#333;font-size:10px;padding:14px;}
 @media(max-width:500px){.stats-grid,.bt-stats{grid-template-columns:repeat(2,1fr);}.ind-bar{grid-template-columns:repeat(2,1fr);}.style-btns{grid-template-columns:repeat(2,1fr);}.risk-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* JOURNAL ANALYSER */
+.journal-drop{border:2px dashed #FFD70044;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px;color:#555;font-size:12px;cursor:pointer;transition:border-color 0.2s;}
+.journal-drop:hover{border-color:#FFD700;color:#FFD700;}
+.journal-drop.dragover{border-color:#FFD700;background:#FFD70011;}
+.btn-parse{width:100%;padding:11px;background:linear-gradient(135deg,#FFD700,#cc9900);color:#000;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;margin-top:6px;}
+.journal-results{margin-top:10px;display:none;}
+.jr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.jr-stat{background:#0a0e00;border:1px solid #FFD70033;border-radius:9px;padding:9px;text-align:center;}
+.jr-stat .jl{font-size:10px;color:#888;margin-bottom:3px;}
+.jr-stat .jv{font-size:16px;font-weight:700;color:#FFD700;}
+.jr-trades{max-height:250px;overflow-y:auto;}
+.jr-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:7px;margin-bottom:4px;font-size:11px;}
+.jr-row.jwin{background:#00c85311;border-left:3px solid #00c853;}
+.jr-row.jloss{background:#ff444411;border-left:3px solid #ff4444;}
+.jr-warn{background:#ff8c0011;border:1px solid #ff8c0033;border-radius:8px;padding:8px 10px;font-size:11px;color:#ff8c00;margin-top:6px;}
+
+/* HEATMAP */
+.heatmap-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px;}
+.hm-cell{border-radius:6px;padding:6px 2px;text-align:center;cursor:default;}
+.hm-cell .hh{font-size:10px;color:#888;margin-bottom:2px;}
+.hm-cell .hw{font-size:12px;font-weight:700;}
+.hm-cell .hc{font-size:9px;color:#666;margin-top:1px;}
+.hm-none{background:#ffffff08;}
+.hm-good{background:#00c85333;}
+.hm-great{background:#00c85366;}
+.hm-best{background:#00c853aa;}
+.hm-bad{background:#ff444433;}
+.hm-worst{background:#ff444466;}
+.hm-legend{display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#888;margin-bottom:8px;}
+.hm-legend span{display:flex;align-items:center;gap:3px;}
+.hm-dot{width:10px;height:10px;border-radius:3px;display:inline-block;}
 </style>
+
 </head>
 <body>
 <header>
@@ -243,6 +276,16 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   </div>
   <canvas id="priceChart"></canvas>
   <div class="chart-lbl"><span id="cl1">--</span><span id="cl2">--</span><span>Now</span></div>
+</div>
+<button class="btn-main" id="signalBtn" onclick="getSignal()">
+  <div class="spinner" id="spinner"></div>
+  <span id="signalBtnTxt">GET GOLD SIGNAL</span>
+</button>
+<button id="autoBtn" onclick="toggleAuto()">AUTO SIGNAL: OFF</button>
+
+<div class="status-bar">
+  <div class="sdot" id="statusDot"></div>
+  <div class="stxt" id="statusTxt">Save your API key to begin</div>
 </div>
 
 <!-- STYLE SELECTOR — now 4 styles including Micro Scalp -->
@@ -281,6 +324,167 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- API KEY -->
+
+<div class="row-wrap">
+  <div class="row-box">
+    <label>LOT SIZE</label>
+    <input id="lotSize" type="number" value="0.02" min="0.01" max="100" step="0.01" oninput="updateRisk()">
+  </div>
+  <div class="row-box">
+    <label>MIN STR</label>
+    <input id="minStrength" type="number" value="60" min="35" max="95" step="1">
+    <div class="rn">%</div>
+  </div>
+  <div class="row-box">
+    <label>BALANCE</label>
+    <input id="accountBal" type="number" value="1000" min="100" step="100" oninput="updateRisk()">
+    <div class="rn">&#163;</div>
+  </div>
+</div>
+
+<!-- LOT SIZE RISK CALCULATOR -->
+
+<div class="risk-card" id="riskCard">
+  <div class="risk-title">&#128200; LOT SIZE RISK CALCULATOR</div>
+  <div class="risk-grid">
+    <div class="risk-box"><div class="rl">MAX LOSS / TRADE</div><div class="rv" id="riskMaxLoss">--</div></div>
+    <div class="risk-box"><div class="rl">% OF BALANCE</div><div class="rv" id="riskPct">--</div></div>
+    <div class="risk-box"><div class="rl">SAFE LOT FOR 2%</div><div class="rv" id="riskSafeLot">--</div></div>
+  </div>
+  <div class="risk-warn" id="riskWarn"></div>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<!-- TREND REVERSAL ALERT -->
+
+<div class="reversal-box" id="reversalBox">
+  <div class="reversal-title">&#128256; TREND REVERSAL DETECTED</div>
+  <div class="reversal-sub" id="reversalTxt"></div>
+</div>
+
+<!-- CONFLICT — NOW A HARD BLOCK -->
+
+<div class="conflict-box" id="conflictBox">
+  <div class="conflict-title">&#128721; DO NOT TRADE &mdash; SIGNAL BLOCKED</div>
+  <div class="conflict-sub" id="conflictTxt"></div>
+</div>
+
+<div class="ind-bar" id="indBar">
+  <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="iEma9">--</div><div class="is">Short</div></div>
+  <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="iEma21">--</div><div class="is">Mid</div></div>
+  <div class="ind-box"><div class="il">RSI 14</div><div class="iv" id="iRsi">--</div><div class="is">Momentum</div></div>
+  <div class="ind-box"><div class="il">ATR 14</div><div class="iv" id="iAtr">--</div><div class="is">Volatility</div></div>
+</div>
+
+<div class="verdict" id="verdict">
+  <div class="vdir" id="verdictDir">--</div>
+  <div class="vsub" id="verdictSub">--</div>
+  <div id="trendBadge" style="margin-bottom:12px;"></div>
+  <div class="str-wrap">
+    <div class="str-top"><span>SIGNAL STRENGTH</span><span id="strPct">--</span></div>
+    <div class="str-bar"><div class="str-fill" id="strFill"></div></div>
+    <div class="str-lbl" id="strLbl">--</div>
+  </div>
+  <div class="analysis">
+    <div class="analysis-ttl">ANALYSIS</div>
+    <div id="analysisList"></div>
+  </div>
+  <div class="levels-ttl">TRADE LEVELS</div>
+  <div class="entry-box">
+    <div class="entry-lbl">ENTRY &mdash; LIVE PRICE</div>
+    <div class="entry-val" id="entryVal">--</div>
+    <div class="entry-sub">Price at time of signal</div>
+  </div>
+  <div class="tp-grid">
+    <div class="tp-box tp1"><div class="tl">&#127919; TP1 Safe</div><div class="tv" id="tp1v">--</div><div class="ts" id="tp1s">--</div><div class="tp" id="tp1p">--</div></div>
+    <div class="tp-box tp2"><div class="tl">&#128176; TP2 Target</div><div class="tv" id="tp2v">--</div><div class="ts" id="tp2s">--</div><div class="tp" id="tp2p">--</div></div>
+    <div class="tp-box tp3"><div class="tl">&#128640; TP3 Max</div><div class="tv" id="tp3v">--</div><div class="ts" id="tp3s">--</div><div class="tp" id="tp3p">--</div></div>
+  </div>
+  <div class="sl-box">
+    <div class="tl">&#128721; STOP LOSS</div>
+    <div class="tv" id="slv">--</div>
+    <div class="ts" id="sls">--</div>
+    <div class="tp" id="slp">--</div>
+  </div>
+  <div class="sl-reminder">
+    <div class="sl-reminder-txt">&#128721; SET STOP LOSS IN MT4 NOW!</div>
+    <div class="sl-reminder-sub" id="slReminderTxt">Open MT4 &rarr; long-press trade &rarr; Modify &rarr; set SL to the price above</div>
+  </div>
+  <div class="close-wrap">
+    <div class="close-lbl">Enter exit price when trade closes:</div>
+    <div class="close-row">
+      <input id="closePrice" type="number" placeholder="Exit price" step="0.01">
+      <button class="btn-win" onclick="closeSignal('WIN')">WIN</button>
+      <button class="btn-loss" onclick="closeSignal('LOSS')">LOSS</button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-box s-wins"><div class="stat-lbl">WINS</div><div class="stat-val" id="statWins">0</div></div>
+  <div class="stat-box s-loss"><div class="stat-lbl">LOSSES</div><div class="stat-val" id="statLoss">0</div></div>
+  <div class="stat-box s-rate"><div class="stat-lbl">WIN RATE</div><div class="stat-val" id="statRate">--</div></div>
+  <div class="stat-box s-pnl"><div class="stat-lbl">TOTAL P&amp;L</div><div class="stat-val" id="statPnl">--</div></div>
+</div>
+
+<div class="log-card">
+  <div class="log-hdr">Signal Log <button class="btn-clr" onclick="clearLog()">Clear</button></div>
+  <div id="logList"><div class="log-empty">No signals yet</div></div>
+</div>
+
+<!-- JOURNAL ANALYSER -->
+
+<div class="panel" id="journalPanel">
+  <div class="panel-hdr" onclick="togglePanel('journal')">
+    <div class="panel-hdr-left">
+      <span class="panel-title">&#128196; Journal Analyser</span>
+    </div>
+    <span class="panel-arrow" id="journalArrow">&#9660;</span>
+  </div>
+  <div class="panel-body" id="journalBody">
+    <div class="panel-sub">Paste your MT4 journal text below and tap Analyse. Automatically extracts all trades, P&amp;L, win rate and flags dangerous trades.</div>
+    <textarea id="journalInput" style="width:100%;height:120px;background:#0a0e00;border:1px solid #FFD70044;color:#ccc;border-radius:9px;padding:10px;font-size:11px;resize:vertical;" placeholder="Paste your MT4 journal text here..."></textarea>
+    <button class="btn-parse" onclick="parseJournal()">&#128202; Analyse Journal</button>
+    <div class="journal-results" id="journalResults">
+      <div class="jr-stats">
+        <div class="jr-stat"><div class="jl">TRADES</div><div class="jv" id="jrTotal">-</div></div>
+        <div class="jr-stat"><div class="jl">WIN RATE</div><div class="jv" id="jrRate">-</div></div>
+        <div class="jr-stat"><div class="jl">P&amp;L (GBP)</div><div class="jv" id="jrPnl">-</div></div>
+        <div class="jr-stat"><div class="jl">WINS</div><div class="jv" id="jrWins" style="color:#00c853;">-</div></div>
+        <div class="jr-stat"><div class="jl">LOSSES</div><div class="jv" id="jrLoss" style="color:#ff4444;">-</div></div>
+        <div class="jr-stat"><div class="jl">NO SL</div><div class="jv" id="jrNoSl" style="color:#ff8c00;">-</div></div>
+      </div>
+      <div class="jr-warn" id="jrWarn" style="display:none;"></div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:700;">TRADE BREAKDOWN</div>
+      <div class="jr-trades" id="jrTrades"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BEST TIME OF DAY -->
+
+<div class="panel" id="heatmapPanel">
+  <div class="panel-hdr" onclick="togglePanel('heatmap')">
+    <div class="panel-hdr-left">
+      <span class="panel-title">&#128337; Best Time of Day</span>
+    </div>
+    <span class="panel-arrow" id="heatmapArrow">&#9660;</span>
+  </div>
+  <div class="panel-body" id="heatmapBody">
+    <div class="panel-sub">Based on your signal log. Updates automatically as you trade. Shows win rate by hour.</div>
+    <div class="hm-legend">
+      <span><span class="hm-dot hm-best"></span>80%+</span>
+      <span><span class="hm-dot hm-good"></span>60-79%</span>
+      <span><span class="hm-dot hm-none"></span>No data</span>
+      <span><span class="hm-dot hm-bad"></span>40-59%</span>
+      <span><span class="hm-dot hm-worst"></span>&lt;40%</span>
+    </div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div style="font-size:11px;color:#888;text-align:center;" id="heatmapNote">Signal log is empty — trade more to build your heatmap</div>
+    <button class="btn-parse" style="margin-top:8px;background:linear-gradient(135deg,#444,#222);color:#ccc;" onclick="buildHeatmap()">&#128260; Refresh Heatmap</button>
+  </div>
+</div>
 
 <div class="panel" id="apiPanel">
   <div class="panel-hdr" onclick="togglePanel('api')">
@@ -353,125 +557,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- LOT SIZE + MIN STRENGTH + ACCOUNT BALANCE -->
-
-<div class="row-wrap">
-  <div class="row-box">
-    <label>LOT SIZE</label>
-    <input id="lotSize" type="number" value="0.04" min="0.01" max="100" step="0.01" oninput="updateRisk()">
-  </div>
-  <div class="row-box">
-    <label>MIN STR</label>
-    <input id="minStrength" type="number" value="60" min="35" max="95" step="1">
-    <div class="rn">%</div>
-  </div>
-  <div class="row-box">
-    <label>BALANCE</label>
-    <input id="accountBal" type="number" value="1000" min="100" step="100" oninput="updateRisk()">
-    <div class="rn">&#163;</div>
-  </div>
-</div>
-
-<!-- LOT SIZE RISK CALCULATOR -->
-
-<div class="risk-card" id="riskCard">
-  <div class="risk-title">&#128200; LOT SIZE RISK CALCULATOR</div>
-  <div class="risk-grid">
-    <div class="risk-box"><div class="rl">MAX LOSS / TRADE</div><div class="rv" id="riskMaxLoss">--</div></div>
-    <div class="risk-box"><div class="rl">% OF BALANCE</div><div class="rv" id="riskPct">--</div></div>
-    <div class="risk-box"><div class="rl">SAFE LOT FOR 2%</div><div class="rv" id="riskSafeLot">--</div></div>
-  </div>
-  <div class="risk-warn" id="riskWarn"></div>
-</div>
-
-<div class="err-box" id="errBox"></div>
-
-<!-- TREND REVERSAL ALERT -->
-
-<div class="reversal-box" id="reversalBox">
-  <div class="reversal-title">&#128256; TREND REVERSAL DETECTED</div>
-  <div class="reversal-sub" id="reversalTxt"></div>
-</div>
-
-<!-- CONFLICT — NOW A HARD BLOCK -->
-
-<div class="conflict-box" id="conflictBox">
-  <div class="conflict-title">&#128721; DO NOT TRADE &mdash; SIGNAL BLOCKED</div>
-  <div class="conflict-sub" id="conflictTxt"></div>
-</div>
-
-<button class="btn-main" id="signalBtn" onclick="getSignal()">
-  <div class="spinner" id="spinner"></div>
-  <span id="signalBtnTxt">GET GOLD SIGNAL</span>
-</button>
-<button id="autoBtn" onclick="toggleAuto()">AUTO SIGNAL: OFF</button>
-
-<div class="status-bar">
-  <div class="sdot" id="statusDot"></div>
-  <div class="stxt" id="statusTxt">Save your API key to begin</div>
-</div>
-
-<div class="ind-bar" id="indBar">
-  <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="iEma9">--</div><div class="is">Short</div></div>
-  <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="iEma21">--</div><div class="is">Mid</div></div>
-  <div class="ind-box"><div class="il">RSI 14</div><div class="iv" id="iRsi">--</div><div class="is">Momentum</div></div>
-  <div class="ind-box"><div class="il">ATR 14</div><div class="iv" id="iAtr">--</div><div class="is">Volatility</div></div>
-</div>
-
-<div class="verdict" id="verdict">
-  <div class="vdir" id="verdictDir">--</div>
-  <div class="vsub" id="verdictSub">--</div>
-  <div id="trendBadge" style="margin-bottom:12px;"></div>
-  <div class="str-wrap">
-    <div class="str-top"><span>SIGNAL STRENGTH</span><span id="strPct">--</span></div>
-    <div class="str-bar"><div class="str-fill" id="strFill"></div></div>
-    <div class="str-lbl" id="strLbl">--</div>
-  </div>
-  <div class="analysis">
-    <div class="analysis-ttl">ANALYSIS</div>
-    <div id="analysisList"></div>
-  </div>
-  <div class="levels-ttl">TRADE LEVELS</div>
-  <div class="entry-box">
-    <div class="entry-lbl">ENTRY &mdash; LIVE PRICE</div>
-    <div class="entry-val" id="entryVal">--</div>
-    <div class="entry-sub">Price at time of signal</div>
-  </div>
-  <div class="tp-grid">
-    <div class="tp-box tp1"><div class="tl">&#127919; TP1 Safe</div><div class="tv" id="tp1v">--</div><div class="ts" id="tp1s">--</div><div class="tp" id="tp1p">--</div></div>
-    <div class="tp-box tp2"><div class="tl">&#128176; TP2 Target</div><div class="tv" id="tp2v">--</div><div class="ts" id="tp2s">--</div><div class="tp" id="tp2p">--</div></div>
-    <div class="tp-box tp3"><div class="tl">&#128640; TP3 Max</div><div class="tv" id="tp3v">--</div><div class="ts" id="tp3s">--</div><div class="tp" id="tp3p">--</div></div>
-  </div>
-  <div class="sl-box">
-    <div class="tl">&#128721; STOP LOSS</div>
-    <div class="tv" id="slv">--</div>
-    <div class="ts" id="sls">--</div>
-    <div class="tp" id="slp">--</div>
-  </div>
-  <div class="sl-reminder">
-    <div class="sl-reminder-txt">&#128721; SET STOP LOSS IN MT4 NOW!</div>
-    <div class="sl-reminder-sub" id="slReminderTxt">Open MT4 &rarr; long-press trade &rarr; Modify &rarr; set SL to the price above</div>
-  </div>
-  <div class="close-wrap">
-    <div class="close-lbl">Enter exit price when trade closes:</div>
-    <div class="close-row">
-      <input id="closePrice" type="number" placeholder="Exit price" step="0.01">
-      <button class="btn-win" onclick="closeSignal('WIN')">WIN</button>
-      <button class="btn-loss" onclick="closeSignal('LOSS')">LOSS</button>
-    </div>
-  </div>
-</div>
-
-<div class="stats-grid">
-  <div class="stat-box s-wins"><div class="stat-lbl">WINS</div><div class="stat-val" id="statWins">0</div></div>
-  <div class="stat-box s-loss"><div class="stat-lbl">LOSSES</div><div class="stat-val" id="statLoss">0</div></div>
-  <div class="stat-box s-rate"><div class="stat-lbl">WIN RATE</div><div class="stat-val" id="statRate">--</div></div>
-  <div class="stat-box s-pnl"><div class="stat-lbl">TOTAL P&amp;L</div><div class="stat-val" id="statPnl">--</div></div>
-</div>
-
-<div class="log-card">
-  <div class="log-hdr">Signal Log <button class="btn-clr" onclick="clearLog()">Clear</button></div>
-  <div id="logList"><div class="log-empty">No signals yet</div></div>
-</div>
 
 </div>
 <div class="footer" id="footerTxt">XAU/USD &mdash; Scalp &middot; 15-min candles &middot; Educational only.</div>
@@ -568,7 +653,7 @@ function setStyle(s){
 }
 
 function togglePanel(w){
-  var map={api:["apiBody","apiArrow"],tg:["tgBody","tgArrow"],bt:["btBody","btArrow"]};
+  var map={api:["apiBody","apiArrow"],tg:["tgBody","tgArrow"],bt:["btBody","btArrow"],journal:["journalBody","journalArrow"],heatmap:["heatmapBody","heatmapArrow"]};
   var b=document.getElementById(map[w][0]),a=document.getElementById(map[w][1]);
   var open=b.classList.contains("open");
   b.classList.toggle("open",!open);
@@ -971,6 +1056,7 @@ function toggleAuto(){
     clearInterval(autoTimer);autoTimer=null;
     btn.textContent="AUTO SIGNAL: OFF";
     btn.style.cssText="width:100%;padding:13px;background:linear-gradient(135deg,#333,#1a1a1a);color:#888;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px;";
+    localStorage.removeItem("td_auto");
     setStatus("Auto off","#555");
   }else{
     if(!APIKEY){alert("Save your API key first.");return;}
@@ -978,6 +1064,7 @@ function toggleAuto(){
     btn.textContent="AUTO: ON \u00b7 "+c.name+" \u00b7 "+th+"%+ \u00b7 "+c.autoLbl;
     btn.style.cssText="width:100%;padding:13px;background:linear-gradient(135deg,#00c853,#007733);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px;";
     setStatus("Auto on \u00b7 "+c.name+" \u00b7 every "+c.autoLbl+" \u00b7 "+th+"%+","#00c853");
+    localStorage.setItem("td_auto","1");localStorage.setItem("td_auto_th",th);
     autoCheck();autoTimer=setInterval(autoCheck,c.autoMs);
   }
 }
@@ -1027,26 +1114,72 @@ function closeSignal(result){
   for(var i=0;i<sigLog.length;i++){if(sigLog[i].id===activeSig.id){sigLog[i]=JSON.parse(JSON.stringify(activeSig));break;}}
   var em=result==="WIN"?"\u2705":"\u274c";
   sendTg(em+" <b>TRADE "+result+"</b> XAU/USD\n"+activeSig.dir+" | Entry: $"+activeSig.entry.toFixed(2)+" Exit: $"+ev.toFixed(2)+"\nMove: "+(mv>=0?"+":"")+mv.toFixed(2)+" | P&L: "+(pnl>=0?"+":"")+P+Math.abs(pnl).toFixed(2));
-  updateStats();renderLog();
+  updateStats();saveLog();renderLog();
   document.getElementById("verdict").style.display="none";
   document.getElementById("conflictBox").style.display="none";
   activeSig=null;
 }
 
-function addLog(sig){sigLog=sigLog.filter(function(l){return l.id!==sig.id;});sigLog.unshift(JSON.parse(JSON.stringify(sig)));if(sigLog.length>50)sigLog.pop();}
+function saveLog(){try{localStorage.setItem("td_log",JSON.stringify(sigLog));localStorage.setItem("td_stats",JSON.stringify({wins:wins,losses:losses,totalPnl:totalPnl}));}catch(e){}}
+function loadLog(){try{var s=localStorage.getItem("td_log");if(s){sigLog=JSON.parse(s);}var t=localStorage.getItem("td_stats");if(t){var d=JSON.parse(t);wins=d.wins||0;losses=d.losses||0;totalPnl=d.totalPnl||0;}}catch(e){}}
+function addLog(sig){sigLog=sigLog.filter(function(l){return l.id!==sig.id;});sigLog.unshift(JSON.parse(JSON.stringify(sig)));if(sigLog.length>100)sigLog.pop();saveLog();}
+function checkAutoOutcome(sig, curPrice){
+  // Check if current price has hit any level of an open signal
+  if(sig.status !== "OPEN") return null;
+  if(!curPrice) return null;
+  var hit = null;
+  if(sig.dir === "BUY"){
+    if(curPrice >= sig.tp3) hit = {level:"TP3", price:sig.tp3, result:"WIN"};
+    else if(curPrice >= sig.tp2) hit = {level:"TP2", price:sig.tp2, result:"WIN"};
+    else if(curPrice >= sig.tp1) hit = {level:"TP1", price:sig.tp1, result:"WIN"};
+    else if(curPrice <= sig.sl) hit = {level:"SL", price:sig.sl, result:"LOSS"};
+  } else {
+    if(curPrice <= sig.tp3) hit = {level:"TP3", price:sig.tp3, result:"WIN"};
+    else if(curPrice <= sig.tp2) hit = {level:"TP2", price:sig.tp2, result:"WIN"};
+    else if(curPrice <= sig.tp1) hit = {level:"TP1", price:sig.tp1, result:"WIN"};
+    else if(curPrice >= sig.sl) hit = {level:"SL", price:sig.sl, result:"LOSS"};
+  }
+  return hit;
+}
+
 function renderLog(){
   var el=document.getElementById("logList");
   if(!sigLog.length){el.innerHTML="<div class='log-empty'>No signals yet</div>";return;}
+  var curPrice = candleCloses.length ? candleCloses[candleCloses.length-1] : null;
   el.innerHTML=sigLog.map(function(s){
     var sc=s.status==="WIN"?"win":s.status==="LOSS"?"loss":"open";
     var col=s.st>=78?"#00c853":s.st>=60?"#FFD700":"#ff4444";
     var pnlHtml="";
     if(s.status!=="OPEN"){var pc=s.pnl>=0?"#00c853":"#ff4444";pnlHtml="<div class='log-pnl' style='color:"+pc+"'>"+(s.pnl>=0?"+":"")+P+Math.abs(s.pnl).toFixed(2)+" | exit $"+s.exitPrice.toFixed(2)+"</div>";}
+    // Auto-outcome check for open signals
+    var autoHtml="";
+    if(s.status==="OPEN" && curPrice){
+      var hit=checkAutoOutcome(s, curPrice);
+      if(hit){
+        var hcol=hit.result==="WIN"?"#00c853":"#ff4444";
+        var hbg=hit.result==="WIN"?"#00c85322":"#ff444422";
+        autoHtml="<div style='margin-top:5px;padding:5px 8px;border-radius:6px;background:"+hbg+";border:1px solid "+hcol+"44;font-size:11px;font-weight:700;color:"+hcol+";'>&#128308; AUTO: current price $"+curPrice.toFixed(2)+" has hit "+hit.level+" ($"+hit.price.toFixed(2)+") &mdash; likely "+hit.result+"</div>";
+      } else {
+        // Show progress towards levels
+        var next="", dist=0;
+        if(s.dir==="BUY"){
+          if(curPrice<s.tp1){next="TP1";dist=(s.tp1-curPrice).toFixed(2);}
+          else if(curPrice<s.tp2){next="TP2";dist=(s.tp2-curPrice).toFixed(2);}
+          else if(curPrice<s.tp3){next="TP3";dist=(s.tp3-curPrice).toFixed(2);}
+        } else {
+          if(curPrice>s.tp1){next="TP1";dist=(curPrice-s.tp1).toFixed(2);}
+          else if(curPrice>s.tp2){next="TP2";dist=(curPrice-s.tp2).toFixed(2);}
+          else if(curPrice>s.tp3){next="TP3";dist=(curPrice-s.tp3).toFixed(2);}
+        }
+        if(next) autoHtml="<div style='margin-top:4px;font-size:10px;color:#888;'>&#128260; $"+curPrice.toFixed(2)+" &mdash; $"+dist+" to "+next+"</div>";
+      }
+    }
     var badges="<span class='badge "+s.dir+"'>"+s.dir+"</span> <span style='color:#FFD700;font-size:12px;font-weight:700'>$"+s.entry.toFixed(2)+"</span> <span style='color:#888;font-size:10px'>"+s.stype+"</span>";
     if(s.style)badges+=" <span style='color:#FFD70066;font-size:9px'>"+s.style+"</span>";
-    return "<div class='log-item "+sc+"'><div class='log-r1'><div style='display:flex;gap:5px;align-items:center;flex-wrap:wrap'>"+badges+"</div><span class='log-outcome "+sc+"'>"+s.status+"</span></div><div class='log-levels'><span>TP1 <b>$"+s.tp1.toFixed(2)+"</b></span><span>TP2 <b>$"+s.tp2.toFixed(2)+"</b></span><span>TP3 <b>$"+s.tp3.toFixed(2)+"</b></span><span>SL <b style='color:#ff4444'>$"+s.sl.toFixed(2)+"</b></span></div><div class='log-meta' style='color:"+col+"'>"+s.slbl+" "+s.st+"% | lot "+s.lot+" | "+P+s.g2+" at TP2</div>"+pnlHtml+"<div class='log-meta'>"+s.time+"</div></div>";
+    return "<div class='log-item "+sc+"'><div class='log-r1'><div style='display:flex;gap:5px;align-items:center;flex-wrap:wrap'>"+badges+"</div><span class='log-outcome "+sc+"'>"+s.status+"</span></div><div class='log-levels'><span>TP1 <b>$"+s.tp1.toFixed(2)+"</b></span><span>TP2 <b>$"+s.tp2.toFixed(2)+"</b></span><span>TP3 <b>$"+s.tp3.toFixed(2)+"</b></span><span>SL <b style='color:#ff4444'>$"+s.sl.toFixed(2)+"</b></span></div><div class='log-meta' style='color:"+col+"'>"+s.slbl+" "+s.st+"% | lot "+s.lot+" | "+P+s.g2+" at TP2</div>"+pnlHtml+autoHtml+"<div class='log-meta'>"+s.time+"</div></div>";
   }).join("");
 }
+
 
 function updateStats(){
   var total=wins+losses;
@@ -1058,7 +1191,7 @@ function updateStats(){
   el.style.color=totalPnl>=0?"#00c853":"#ff4444";
 }
 
-function clearLog(){if(!confirm("Clear all history?"))return;sigLog=[];wins=0;losses=0;totalPnl=0;updateStats();renderLog();}
+function clearLog(){if(!confirm("Clear all history?"))return;sigLog=[];wins=0;losses=0;totalPnl=0;localStorage.removeItem("td_log");localStorage.removeItem("td_stats");updateStats();renderLog();}
 function setBusy(on){document.getElementById("signalBtn").disabled=on;document.getElementById("spinner").style.display=on?"block":"none";document.getElementById("signalBtnTxt").textContent=on?"Fetching...":"GET GOLD SIGNAL";}
 function setStatus(txt,col){document.getElementById("statusTxt").textContent=txt;document.getElementById("statusDot").style.background=col||"#555";}
 function setInd(id,v,col){var el=document.getElementById(id);if(!el)return;el.textContent=v;if(col)el.style.color=col;}
@@ -1071,11 +1204,176 @@ function loadAll(){
   TGCHAT=localStorage.getItem("td_tgc")||"";
   var st=localStorage.getItem("td_style")||"scalp";
   setStyle(st);
+  loadLog();
+  updateStats();
+  renderLog();
   if(APIKEY){document.getElementById("apiOk").style.display="block";setStatus("Ready \u2014 tap Get Signal","#00c853");}
   if(TGTOKEN&&TGCHAT)document.getElementById("tgOk").style.display="block";
   autoCollapse();
   updateSessionLabel();
   updateRisk();
+  loadHmData();
+  buildHeatmap();
+  // Restore auto signal if it was running
+  if(localStorage.getItem("td_auto")==="1"&&APIKEY){
+    var savedTh=parseInt(localStorage.getItem("td_auto_th"))||60;
+    document.getElementById("minStrength").value=savedTh;
+    var c=cfg();
+    var btn=document.getElementById("autoBtn");
+    btn.textContent="AUTO: ON \u00b7 "+c.name+" \u00b7 "+savedTh+"%+ \u00b7 "+c.autoLbl;
+    btn.style.cssText="width:100%;padding:13px;background:linear-gradient(135deg,#00c853,#007733);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px;";
+    setStatus("Auto restored \u00b7 "+c.name+" \u00b7 every "+c.autoLbl,"#00c853");
+    autoCheck();autoTimer=setInterval(autoCheck,c.autoMs);
+  }
+}
+
+
+// ── JOURNAL ANALYSER ─────────────────────────────────────
+function parseJournal(){
+  var text = document.getElementById("journalInput").value;
+  if(!text.trim()){alert("Paste your MT4 journal first.");return;}
+  
+  var trades = {};
+  var openRe = /(\d{2}:\d{2}:\d{2}).*order is open : #(\d+) (buy|sell) ([\d.]+) XAUUSD.*at ([\d.]+)/gi;
+  var closeRe = /(\d{2}:\d{2}:\d{2}).*order #(\d+) (buy|sell) ([\d.]+) XAUUSD.*closed at price ([\d.]+)/gi;
+  var slRe = /order #(\d+).*sl: ([\d.]+) tp:/g;
+  
+  // Find all opens
+  var m;
+  while((m = openRe.exec(text)) !== null){
+    var id = m[2];
+    trades[id] = {id:id, time:m[1], dir:m[3].toUpperCase(), lot:parseFloat(m[4]), entry:parseFloat(m[5]), sl:0, closed:false};
+  }
+  
+  // Find SL from modify lines
+  var modRe = /order #(\d+).*-> sl: ([\d.]+) tp:/g;
+  while((m = modRe.exec(text)) !== null){
+    if(trades[m[1]] && parseFloat(m[2]) > 0) trades[m[1]].sl = parseFloat(m[2]);
+  }
+  
+  // Find all closes
+  while((m = closeRe.exec(text)) !== null){
+    var id = m[2];
+    if(trades[id]){
+      trades[id].exit = parseFloat(m[5]);
+      trades[id].closeTime = m[1];
+      trades[id].closed = true;
+      var move = trades[id].dir==="BUY" ? trades[id].exit - trades[id].entry : trades[id].entry - trades[id].exit;
+      trades[id].move = move;
+      trades[id].pnl = parseFloat((move * trades[id].lot * 100 * 0.79).toFixed(2));
+      trades[id].win = move > 0;
+    }
+  }
+  
+  var closed = Object.values(trades).filter(function(t){return t.closed;});
+  if(!closed.length){alert("No completed trades found. Make sure you pasted the full journal.");return;}
+  
+  var wins = closed.filter(function(t){return t.win;}).length;
+  var losses = closed.length - wins;
+  var totalPnlJ = closed.reduce(function(a,t){return a+t.pnl;},0);
+  var noSl = closed.filter(function(t){return t.sl===0;}).length;
+  var bigLosses = closed.filter(function(t){return t.pnl < -5;});
+  
+  document.getElementById("jrTotal").textContent = closed.length;
+  document.getElementById("jrRate").textContent = Math.round(wins/closed.length*100)+"%";
+  document.getElementById("jrRate").style.color = wins/closed.length >= 0.6 ? "#00c853" : "#ff4444";
+  document.getElementById("jrPnl").textContent = (totalPnlJ>=0?"+":"")+"£"+Math.abs(totalPnlJ).toFixed(2);
+  document.getElementById("jrPnl").style.color = totalPnlJ>=0?"#00c853":"#ff4444";
+  document.getElementById("jrWins").textContent = wins;
+  document.getElementById("jrLoss").textContent = losses;
+  document.getElementById("jrNoSl").textContent = noSl;
+  
+  // Warnings
+  var warn = document.getElementById("jrWarn");
+  var warnings = [];
+  if(noSl > 0) warnings.push("⚠️ "+noSl+" trades had NO stop loss set");
+  if(bigLosses.length > 0){
+    var bigTotal = bigLosses.reduce(function(a,t){return a+t.pnl;},0);
+    warnings.push("⚠️ "+bigLosses.length+" trades lost over £5 each (total: £"+Math.abs(bigTotal).toFixed(2)+")");
+  }
+  var lossStreak = 0, maxStreak = 0, cur = 0;
+  closed.forEach(function(t){if(!t.win){cur++;maxStreak=Math.max(maxStreak,cur);}else cur=0;});
+  if(maxStreak >= 3) warnings.push("⚠️ Max losing streak: "+maxStreak+" in a row");
+  
+  if(warnings.length){warn.innerHTML = warnings.join("<br>");warn.style.display="block";}
+  else{warn.style.display="none";}
+  
+  // Trade list
+  var tradeEl = document.getElementById("jrTrades");
+  tradeEl.innerHTML = closed.slice().reverse().map(function(t){
+    var cls = t.win ? "jwin" : "jloss";
+    var col = t.win ? "#00c853" : "#ff4444";
+    var slTxt = t.sl > 0 ? "SL:$"+t.sl.toFixed(2) : "<span style='color:#ff8c00'>NO SL</span>";
+    return "<div class='jr-row "+cls+"'>"
+      +"<div><span class='badge "+t.dir+"' style='font-size:10px;padding:1px 6px'>"+t.dir+"</span> "
+      +"<span style='color:#FFD700'>$"+t.entry.toFixed(2)+"</span> "
+      +"<span style='color:#888;font-size:10px'>→ $"+t.exit.toFixed(2)+"</span> "
+      +"<span style='color:#888;font-size:10px;margin-left:4px'>"+slTxt+"</span>"
+      +"<div style='font-size:10px;color:#555;'>"+t.time+" &middot; lot "+t.lot+"</div></div>"
+      +"<div style='color:"+col+";font-weight:700;'>"+(t.pnl>=0?"+":"")+"£"+Math.abs(t.pnl).toFixed(2)+"</div>"
+      +"</div>";
+  }).join("");
+  
+  document.getElementById("journalResults").style.display="block";
+  
+  // Auto-feed into heatmap data
+  closed.forEach(function(t){
+    var h = parseInt(t.time.split(":")[0]);
+    if(!hmData[h]) hmData[h]={wins:0,total:0};
+    hmData[h].total++;
+    if(t.win) hmData[h].wins++;
+  });
+  localStorage.setItem("td_hmdata", JSON.stringify(hmData));
+  buildHeatmap();
+}
+
+// ── HEATMAP ───────────────────────────────────────────────
+var hmData = {};
+
+function loadHmData(){
+  try{var d=localStorage.getItem("td_hmdata");if(d)hmData=JSON.parse(d);}catch(e){}
+  // Also build from signal log
+  sigLog.forEach(function(s){
+    if(s.status==="OPEN") return;
+    var h = parseInt((s.time||"00:00").split(":")[0]);
+    if(isNaN(h)) return;
+    if(!hmData[h]) hmData[h]={wins:0,total:0};
+    hmData[h].total++;
+    if(s.status==="WIN") hmData[h].wins++;
+  });
+}
+
+function buildHeatmap(){
+  loadHmData();
+  var grid = document.getElementById("heatmapGrid");
+  var note = document.getElementById("heatmapNote");
+  var hasData = Object.keys(hmData).length > 0;
+  
+  if(!hasData){
+    grid.innerHTML="";
+    note.textContent="No data yet — analyse a journal or log some trades with WIN/LOSS outcomes";
+    return;
+  }
+  
+  note.textContent="";
+  var hours = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0,1];
+  grid.innerHTML = hours.map(function(h){
+    var d = hmData[h];
+    if(!d||d.total===0){
+      return "<div class='hm-cell hm-none'><div class='hh'>"+h.toString().padStart(2,"0")+"h</div><div class='hw' style='color:#444;'>--</div><div class='hc'>no data</div></div>";
+    }
+    var wr = Math.round(d.wins/d.total*100);
+    var cls = wr>=80?"hm-best":wr>=60?"hm-good":wr>=40?"hm-bad":"hm-worst";
+    var col = wr>=80?"#00c853":wr>=60?"#88dd88":wr>=40?"#f39c12":"#ff4444";
+    // Highlight peak window
+    var isPeak = (h>=2&&h<=5);
+    var border = isPeak ? "border:1px solid #FFD70066;" : "";
+    return "<div class='hm-cell "+cls+"' style='"+border+"'>"
+      +"<div class='hh' style='"+(isPeak?"color:#FFD700;":"")+"'>"+h.toString().padStart(2,"0")+"h"+(isPeak?" ⭐":"")+"</div>"
+      +"<div class='hw' style='color:"+col+";'>"+wr+"%</div>"
+      +"<div class='hc'>"+d.wins+"/"+d.total+"</div>"
+      +"</div>";
+  }).join("");
 }
 
 window.addEventListener("resize",function(){if(candleCloses.length)drawChart(candleCloses);});
