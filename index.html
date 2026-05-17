@@ -506,7 +506,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
       </div>
       <div class="tg-btns">
         <button class="tg-btn active" id="tgAll">ALL</button>
-        <button class="tg-btn" id="tgAutoOnly">AUTO ONLY</button>
+        <button class="tg-btn" id="tgAuto">AUTO ONLY</button>
         <button class="tg-btn" id="tgOff">OFF</button>
       </div>
     </div>
@@ -1310,7 +1310,7 @@ function init() {
 
   // TG mode toggle
   document.getElementById('tgAll').addEventListener('click', function(){ setTgMode('all'); });
-  document.getElementById('tgAutoOnly').addEventListener('click', function(){ setTgMode('auto'); });
+  document.getElementById('tgAuto').addEventListener('click', function(){ setTgMode('auto'); });
   document.getElementById('tgOff').addEventListener('click', function(){ setTgMode('off'); });
 
   // Journal
