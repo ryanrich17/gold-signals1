@@ -442,7 +442,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <div class="panel tg" id="tgPanel">
-  <div class="panel-hdr" onclick="togglePanel('tg')"><div class="panel-hdr-left"><span class="panel-title">Telegram Alerts</span><span class="panel-tick" id="tgTick">&#10003; Configured</span></div><span class="panel-arrow" id="tgArrow">&#9660;</span></div>
+  <div class="panel-hdr" id="tgPanelHdr"><div class="panel-hdr-left"><span class="panel-title">Telegram Alerts</span><span class="panel-tick" id="tgTick">&#10003; Configured</span></div><span class="panel-arrow" id="tgArrow">&#9660;</span></div>
   <div class="panel-body" id="tgBody">
     <div class="panel-sub">Bot Token from @BotFather &middot; Channel ID: -1003981765939</div>
     <div style="display:flex;align-items:center;justify-content:space-between;background:#0a0e00;border:1px solid #FFD70033;border-radius:9px;padding:10px 14px;margin-bottom:10px;">
@@ -451,13 +451,13 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
         <div style="font-size:10px;color:#888;margin-top:2px;" id="tgModeDesc">All signals (manual + auto)</div>
       </div>
       <div style="display:flex;gap:6px;">
-        <button id="tgModeAll" onclick="setTgMode('all')" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#FFD700;color:#000;border:none;">ALL</button>
-        <button id="tgModeAuto" onclick="setTgMode('auto')" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#1a1a00;color:#888;border:1px solid #FFD70033;">AUTO ONLY</button>
-        <button id="tgModeOff" onclick="setTgMode('off')" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#1a1a00;color:#888;border:1px solid #FFD70033;">OFF</button>
+        <button id="tgModeAll" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#FFD700;color:#000;border:none;">ALL</button>
+        <button id="tgModeAuto" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#1a1a00;color:#888;border:1px solid #FFD70033;">AUTO ONLY</button>
+        <button id="tgModeOff" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#1a1a00;color:#888;border:1px solid #FFD70033;">OFF</button>
       </div>
     </div>
-    <div class="inp-row"><input id="tgTokenInput" type="password" placeholder="Bot Token"><button class="btn-teal" onclick="saveTg()">Save</button></div>
-    <div class="inp-row"><input id="tgChatInput" type="text" placeholder="Chat ID e.g. -1003981765939"><button class="btn-teal-out" onclick="testTg()">Test</button></div>
+    <div class="inp-row"><input id="tgTokenInput" type="password" placeholder="Bot Token"><button class="btn-teal" id="tgSaveBtn">Save</button></div>
+    <div class="inp-row"><input id="tgChatInput" type="text" placeholder="Chat ID e.g. -1003981765939"><button class="btn-teal-out" id="tgTestBtn">Test</button></div>
     <div class="ok-teal" id="tgOk">&#10003; Telegram configured</div>
   </div>
 </div>
@@ -1139,6 +1139,15 @@ autoCheck();autoTimer=setInterval(autoCheck,c.autoMs);
 }
 
 window.addEventListener(“resize”,function(){if(candleCloses.length)drawChart(candleCloses);});
+// Add event listeners for panels and buttons
+document.addEventListener(“DOMContentLoaded”, function() {
+document.getElementById(“tgPanelHdr”).addEventListener(“click”, function(){togglePanel(“tg”);});
+document.getElementById(“tgModeAll”).addEventListener(“click”, function(){setTgMode(“all”);});
+document.getElementById(“tgModeAuto”).addEventListener(“click”, function(){setTgMode(“auto”);});
+document.getElementById(“tgModeOff”).addEventListener(“click”, function(){setTgMode(“off”);});
+document.getElementById(“tgSaveBtn”).addEventListener(“click”, saveTg);
+document.getElementById(“tgTestBtn”).addEventListener(“click”, testTg);
+});
 window.onload=loadAll;
 </script>
 
