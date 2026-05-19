@@ -279,6 +279,29 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 .btn-bs{background:linear-gradient(135deg,#00c853,#007733);color:#fff;border:none;padding:14px 8px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;}
 .btn-ss{background:linear-gradient(135deg,#ff4444,#aa0000);color:#fff;border:none;padding:14px 8px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;}
 .mt4-note{font-size:10px;color:#555;text-align:center;line-height:1.5;}
+
+/* EXECUTE PROMPT MODAL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#0a0e00;border-radius:16px;padding:24px;width:100%;max-width:360px;text-align:center;}
+.modal-dir{font-size:48px;font-weight:800;letter-spacing:3px;margin-bottom:6px;}
+.modal-dir.BUY{color:#00c853;}
+.modal-dir.SELL{color:#ff4444;}
+.modal-strength{font-size:13px;margin-bottom:4px;}
+.modal-price{font-size:22px;font-weight:700;color:#FFD700;margin-bottom:16px;}
+.modal-levels{background:#ffffff08;border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;}
+.modal-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #ffffff08;}
+.modal-row:last-child{border-bottom:none;}
+.modal-row .ml{color:#888;}
+.modal-row .mv{font-weight:700;color:#e0e0e0;}
+.modal-row .mv.tp{color:#00c853;}
+.modal-row .mv.sl{color:#ff4444;}
+.modal-action{font-size:11px;color:#888;margin-bottom:16px;line-height:1.6;}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-btn-yes{background:linear-gradient(135deg,#FFD700,#cc9900);color:#000;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;}
+.modal-btn-no{background:#1a1a1a;color:#888;border:1px solid #333;padding:16px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;}
+.modal-border-buy{border:2px solid #00c853;}
+.modal-border-sell{border:2px solid #ff4444;}
 </style>
 
 </head>
@@ -412,11 +435,11 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   <div class="sl-remind"><div class="sl-remind-ttl">&#128721; SET STOP LOSS IN MT4 NOW!</div><div class="sl-remind-sub" id="slSub">Open MT4 &rarr; long-press trade &rarr; Modify &rarr; set SL</div></div>
   <div class="mt4-wrap" id="mt4Wrap">
     <div class="mt4-ttl">&#128241; PLACE IN MT4</div>
-    <div class="mt4-sub">Tap to open MT4 with the order pre-filled. You confirm in MT4 before it executes. Uses TP1 as entry trigger, TP2 as target.</div>
+    <div class="mt4-sub">Tap to open MT4 with a market order pre-filled at current price, with your SL and TP1 set automatically. You confirm in MT4 before it executes.</div>
     <div class="mt4-mode" id="mt4ModeNote">Mode: <b id="mt4ModeTxt">Live</b> &mdash; change in API Key panel</div>
     <div class="mt4-btns">
-      <button class="btn-bs" id="btnBuyStop">&#9650; BUY STOP<br><small style="font-weight:400;font-size:10px;">Enter above price</small></button>
-      <button class="btn-ss" id="btnSellStop">&#9660; SELL STOP<br><small style="font-weight:400;font-size:10px;">Enter below price</small></button>
+      <button class="btn-bs" id="btnBuyStop">&#9650; BUY NOW<br><small style="font-weight:400;font-size:10px;">Market order</small></button>
+      <button class="btn-ss" id="btnSellStop">&#9660; SELL NOW<br><small style="font-weight:400;font-size:10px;">Market order</small></button>
     </div>
     <div class="mt4-note">MT4 opens with entry, SL and TP pre-filled. Review before confirming.</div>
   </div>
@@ -893,6 +916,10 @@ function buildSignal(cl, hi, lo, cur, stype) {
   document.getElementById('slSub').textContent='Open MT4 \u2192 long-press trade \u2192 Modify \u2192 set SL to $'+sl2;
   document.getElementById('closePrice').value='';
   addLog(activeSig); renderLog(); scrollToVerdict();
+  // Show execute prompt for strong signals
+  if (activeSig && activeSig.slbl === 'STRONG') {
+    setTimeout(function(){ showExecModal(activeSig); }, 800);
+  }
 }
 
 function scrollToVerdict() {
@@ -1235,6 +1262,7 @@ async function testTg() {
 
 // ── INIT ─────────────────────────────────────────────────
 function init() {
+  window.P = P; // make P accessible to modal
   APIKEY=localStorage.getItem('td_key')||'';
   TGTOKEN=localStorage.getItem('td_tgt')||'';
   TGCHAT=localStorage.getItem('td_tgc')||'';
@@ -1356,6 +1384,11 @@ function init() {
   document.getElementById('btnModeDemo').addEventListener('click', function(){ setMt4Mode('demo'); });
   setMt4Mode(mt4Mode);
 
+  // Execute modal buttons
+  document.getElementById('execYes').addEventListener('click', executeTradeInMT4);
+  document.getElementById('execNo').addEventListener('click', hideExecModal);
+  document.getElementById('execModal').addEventListener('click', function(e){ if(e.target===this) hideExecModal(); });
+
   // Resize chart
   window.addEventListener('resize', function(){ if(candleCloses.length) drawChart(candleCloses); });
 }
@@ -1385,31 +1418,31 @@ function setMt4Mode(mode) {
 function placeMT4Order(type) {
   if (!activeSig) { alert('Generate a signal first.'); return; }
   var lot = activeSig.lot || 0.02;
-  var entryPrice, slPrice, tpPrice, label;
+  var slPrice, tpPrice, label, action;
   if (type === 'buystop') {
-    entryPrice = activeSig.tp1;  // trigger above current price
-    slPrice    = activeSig.sl;
-    tpPrice    = activeSig.tp2;
-    label      = 'BUY STOP';
+    slPrice = activeSig.sl;
+    tpPrice = activeSig.tp1;
+    label   = 'BUY';
+    action  = 'buy';
   } else {
-    entryPrice = activeSig.tp1;  // for sell, tp1 is below entry
-    slPrice    = activeSig.sl;
-    tpPrice    = activeSig.tp2;
-    label      = 'SELL STOP';
+    slPrice = activeSig.sl;
+    tpPrice = activeSig.tp1;
+    label   = 'SELL';
+    action  = 'sell';
   }
-  var msg = label + ' order details:\n\n'
-    + 'Entry trigger: $' + parseFloat(entryPrice).toFixed(2) + '\n'
-    + 'Stop Loss:     $' + parseFloat(slPrice).toFixed(2) + '\n'
-    + 'Take Profit:   $' + parseFloat(tpPrice).toFixed(2) + '\n'
-    + 'Lot Size:      ' + lot + '\n'
-    + 'Mode:          ' + mt4Mode.toUpperCase() + '\n\n'
-    + 'Tap OK to open MT4. Review carefully before confirming.';
+  var entryPrice = activeSig.entry;
+  var msg = label + ' MARKET ORDER\n\n'
+    + 'Symbol:      XAU/USD\n'
+    + 'Entry:       $' + parseFloat(entryPrice).toFixed(2) + ' (market price)\n'
+    + 'Stop Loss:   $' + parseFloat(slPrice).toFixed(2) + '\n'
+    + 'Take Profit: $' + parseFloat(tpPrice).toFixed(2) + '\n'
+    + 'Lot Size:    ' + lot + '\n'
+    + 'Mode:        ' + mt4Mode.toUpperCase() + '\n\n'
+    + 'Tap OK to open MT4. SET YOUR SL IMMEDIATELY after placing.';
   if (!confirm(msg)) return;
   var params = [
     'symbol=XAUUSD',
-    'action=pending',
-    'type=' + type,
-    'price=' + parseFloat(entryPrice).toFixed(2),
+    'action=' + action,
     'volume=' + parseFloat(lot).toFixed(2),
     'sl=' + parseFloat(slPrice).toFixed(2),
     'tp=' + parseFloat(tpPrice).toFixed(2)
@@ -1420,12 +1453,85 @@ function placeMT4Order(type) {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setStatus(label + ' sent to MT4 (' + mt4Mode + ')', '#00c853');
-  sendTg('[' + label + '] XAU/USD | Entry: $' + parseFloat(entryPrice).toFixed(2) + ' | SL: $' + parseFloat(slPrice).toFixed(2) + ' | TP: $' + parseFloat(tpPrice).toFixed(2) + ' | Lot: ' + lot + ' | ' + mt4Mode.toUpperCase(), 'MANUAL');
+  setStatus(label + ' market order sent to MT4 (' + mt4Mode + ')', '#00c853');
+  sendTg('[' + label + ' MARKET] XAU/USD | SL: $' + parseFloat(slPrice).toFixed(2) + ' | TP: $' + parseFloat(tpPrice).toFixed(2) + ' | Lot: ' + lot + ' | ' + mt4Mode.toUpperCase(), 'MANUAL');
+}
+
+
+// EXECUTE TRADE MODAL
+function showExecModal(sig) {
+  if (!sig || sig.slbl !== 'STRONG') return;
+  var modal = document.getElementById('execModal');
+  var box = document.getElementById('execModalBox');
+  var dir = sig.dir;
+  // Set direction
+  var dirEl = document.getElementById('execDir');
+  dirEl.textContent = dir;
+  dirEl.className = 'modal-dir ' + dir;
+  box.className = 'modal-box modal-border-' + (dir === 'BUY' ? 'buy' : 'sell');
+  // Set details
+  document.getElementById('execStrength').textContent = sig.slbl + ' ' + sig.st + '% signal';
+  document.getElementById('execStrength').style.color = '#00c853';
+  document.getElementById('execPrice').textContent = 'XAU/USD at $' + sig.entry.toFixed(2);
+  document.getElementById('execEntry').textContent = '$' + sig.entry.toFixed(2);
+  document.getElementById('execTp1').textContent = '$' + sig.tp1.toFixed(2) + ' (+' + window.P + sig.g1 + ')';
+  document.getElementById('execTp2').textContent = '$' + sig.tp2.toFixed(2) + ' (+' + window.P + sig.g2 + ')';
+  document.getElementById('execSl').textContent = '$' + sig.sl.toFixed(2) + ' (-' + window.P + sig.gs + ')';
+  document.getElementById('execLot').textContent = sig.lot + ' lots';
+  // Vibrate
+  if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+  // Show modal
+  modal.classList.add('show');
+}
+
+function hideExecModal() {
+  document.getElementById('execModal').classList.remove('show');
+}
+
+function executeTradeInMT4() {
+  if (!activeSig) { hideExecModal(); return; }
+  var action = activeSig.dir === 'BUY' ? 'buy' : 'sell';
+  var params = [
+    'symbol=XAUUSD',
+    'action=' + action,
+    'volume=' + parseFloat(activeSig.lot).toFixed(2),
+    'sl=' + parseFloat(activeSig.sl).toFixed(2),
+    'tp=' + parseFloat(activeSig.tp1).toFixed(2)
+  ];
+  var link = 'metatrader4://trade?' + params.join('&');
+  var a = document.createElement('a');
+  a.href = link;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  hideExecModal();
+  setStatus(activeSig.dir + ' order sent to MT4', '#00c853');
 }
 
 window.onload = init;
 </script>
 
+<!-- EXECUTE TRADE MODAL -->
+
+<div class="modal-overlay" id="execModal">
+  <div class="modal-box" id="execModalBox">
+    <div style="font-size:11px;color:#FFD700;font-weight:700;letter-spacing:1px;margin-bottom:8px;">STRONG SIGNAL DETECTED</div>
+    <div class="modal-dir" id="execDir">BUY</div>
+    <div class="modal-strength" id="execStrength"></div>
+    <div class="modal-price" id="execPrice"></div>
+    <div class="modal-levels">
+      <div class="modal-row"><span class="ml">Entry</span><span class="mv" id="execEntry">--</span></div>
+      <div class="modal-row"><span class="ml">TP1</span><span class="mv tp" id="execTp1">--</span></div>
+      <div class="modal-row"><span class="ml">TP2</span><span class="mv tp" id="execTp2">--</span></div>
+      <div class="modal-row"><span class="ml">Stop Loss</span><span class="mv sl" id="execSl">--</span></div>
+      <div class="modal-row"><span class="ml">Lot Size</span><span class="mv" id="execLot">--</span></div>
+    </div>
+    <div class="modal-action">Tap EXECUTE to open MT4 trade screen.<br>Confirm in MT4 to place the order.</div>
+    <div class="modal-btns">
+      <button class="modal-btn-no" id="execNo">SKIP</button>
+      <button class="modal-btn-yes" id="execYes">EXECUTE</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
