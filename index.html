@@ -270,6 +270,15 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 
 .footer{text-align:center;color:#333;font-size:10px;padding:14px;}
 @media(max-width:500px){.stats4,.bt4,.jr3{grid-template-columns:repeat(2,1fr);}.ind-bar{grid-template-columns:repeat(2,1fr);}.hm-grid{grid-template-columns:repeat(4,1fr);}}
+
+.mt4-wrap{background:#0a1a00;border:2px solid #00c853;border-radius:12px;padding:14px;margin-bottom:10px;}
+.mt4-ttl{font-size:12px;color:#00c853;font-weight:800;margin-bottom:4px;}
+.mt4-sub{font-size:10px;color:#888;margin-bottom:10px;line-height:1.5;}
+.mt4-mode{background:#FFD70011;border:1px solid #FFD70033;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#FFD700;}
+.mt4-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.btn-bs{background:linear-gradient(135deg,#00c853,#007733);color:#fff;border:none;padding:14px 8px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;}
+.btn-ss{background:linear-gradient(135deg,#ff4444,#aa0000);color:#fff;border:none;padding:14px 8px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;}
+.mt4-note{font-size:10px;color:#555;text-align:center;line-height:1.5;}
 </style>
 
 </head>
@@ -401,6 +410,16 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   </div>
   <div class="sl-box"><div class="tl">&#128721; STOP LOSS</div><div class="tv" id="slv">--</div><div class="ts" id="sls">--</div><div class="tp" id="slp">--</div></div>
   <div class="sl-remind"><div class="sl-remind-ttl">&#128721; SET STOP LOSS IN MT4 NOW!</div><div class="sl-remind-sub" id="slSub">Open MT4 &rarr; long-press trade &rarr; Modify &rarr; set SL</div></div>
+  <div class="mt4-wrap" id="mt4Wrap">
+    <div class="mt4-ttl">&#128241; PLACE IN MT4</div>
+    <div class="mt4-sub">Tap to open MT4 with the order pre-filled. You confirm in MT4 before it executes. Uses TP1 as entry trigger, TP2 as target.</div>
+    <div class="mt4-mode" id="mt4ModeNote">Mode: <b id="mt4ModeTxt">Live</b> &mdash; change in API Key panel</div>
+    <div class="mt4-btns">
+      <button class="btn-bs" id="btnBuyStop">&#9650; BUY STOP<br><small style="font-weight:400;font-size:10px;">Enter above price</small></button>
+      <button class="btn-ss" id="btnSellStop">&#9660; SELL STOP<br><small style="font-weight:400;font-size:10px;">Enter below price</small></button>
+    </div>
+    <div class="mt4-note">MT4 opens with entry, SL and TP pre-filled. Review before confirming.</div>
+  </div>
   <div class="close-wrap">
     <div class="close-lbl">Enter exit price when trade closes:</div>
     <div class="close-row">
@@ -485,6 +504,14 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   </div>
   <div class="panel-body" id="apiBody">
     <div class="panel-sub">Free at <b>twelvedata.com</b> &mdash; saved on device only.</div>
+    <div style="background:#0a0e00;border:1px solid #FFD70022;border-radius:9px;padding:10px 14px;margin-bottom:10px;">
+      <div style="font-size:11px;color:#FFD700;font-weight:700;margin-bottom:6px;">MT4 Account Mode</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <button class="tg-btn active" id="btnModeLive">LIVE</button>
+        <button class="tg-btn" id="btnModeDemo">DEMO</button>
+      </div>
+      <div style="font-size:10px;color:#888;" id="mt4ModeDesc">Orders will deep-link to your live MT4 account</div>
+    </div>
     <div class="inp-row"><input type="password" id="apiInput" placeholder="Paste API key"><button class="btn-gold" id="apiSaveBtn">Save</button></div>
     <div class="ok-msg ok-gold" id="apiOk">&#10003; API key saved</div>
   </div>
@@ -506,7 +533,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
       </div>
       <div class="tg-btns">
         <button class="tg-btn active" id="tgAll">ALL</button>
-        <button class="tg-btn" id="tgAuto">AUTO ONLY</button>
+        <button class="tg-btn" id="tgAutoOnly">AUTO ONLY</button>
         <button class="tg-btn" id="tgOff">OFF</button>
       </div>
     </div>
@@ -1310,7 +1337,7 @@ function init() {
 
   // TG mode toggle
   document.getElementById('tgAll').addEventListener('click', function(){ setTgMode('all'); });
-  document.getElementById('tgAuto').addEventListener('click', function(){ setTgMode('auto'); });
+  document.getElementById('tgAutoOnly').addEventListener('click', function(){ setTgMode('auto'); });
   document.getElementById('tgOff').addEventListener('click', function(){ setTgMode('off'); });
 
   // Journal
@@ -1322,8 +1349,79 @@ function init() {
   // Backtest
   document.getElementById('btRunBtn').addEventListener('click', runBacktest);
 
+  // MT4 buttons
+  document.getElementById('btnBuyStop').addEventListener('click', function(){ placeMT4Order('buystop'); });
+  document.getElementById('btnSellStop').addEventListener('click', function(){ placeMT4Order('sellstop'); });
+  document.getElementById('btnModeLive').addEventListener('click', function(){ setMt4Mode('live'); });
+  document.getElementById('btnModeDemo').addEventListener('click', function(){ setMt4Mode('demo'); });
+  setMt4Mode(mt4Mode);
+
   // Resize chart
   window.addEventListener('resize', function(){ if(candleCloses.length) drawChart(candleCloses); });
+}
+
+
+// MT4 MODE
+var mt4Mode = localStorage.getItem('td_mt4mode') || 'live';
+
+function setMt4Mode(mode) {
+  mt4Mode = mode;
+  localStorage.setItem('td_mt4mode', mode);
+  var lb = document.getElementById('btnModeLive');
+  var db = document.getElementById('btnModeDemo');
+  var desc = document.getElementById('mt4ModeDesc');
+  var note = document.getElementById('mt4ModeTxt');
+  if (mode === 'demo') {
+    lb.classList.remove('active'); db.classList.add('active');
+    if (desc) desc.textContent = 'Orders will deep-link to your DEMO MT4 account';
+    if (note) note.textContent = 'Demo';
+  } else {
+    lb.classList.add('active'); db.classList.remove('active');
+    if (desc) desc.textContent = 'Orders will deep-link to your live MT4 account';
+    if (note) note.textContent = 'Live';
+  }
+}
+
+function placeMT4Order(type) {
+  if (!activeSig) { alert('Generate a signal first.'); return; }
+  var lot = activeSig.lot || 0.02;
+  var entryPrice, slPrice, tpPrice, label;
+  if (type === 'buystop') {
+    entryPrice = activeSig.tp1;  // trigger above current price
+    slPrice    = activeSig.sl;
+    tpPrice    = activeSig.tp2;
+    label      = 'BUY STOP';
+  } else {
+    entryPrice = activeSig.tp1;  // for sell, tp1 is below entry
+    slPrice    = activeSig.sl;
+    tpPrice    = activeSig.tp2;
+    label      = 'SELL STOP';
+  }
+  var msg = label + ' order details:\n\n'
+    + 'Entry trigger: $' + parseFloat(entryPrice).toFixed(2) + '\n'
+    + 'Stop Loss:     $' + parseFloat(slPrice).toFixed(2) + '\n'
+    + 'Take Profit:   $' + parseFloat(tpPrice).toFixed(2) + '\n'
+    + 'Lot Size:      ' + lot + '\n'
+    + 'Mode:          ' + mt4Mode.toUpperCase() + '\n\n'
+    + 'Tap OK to open MT4. Review carefully before confirming.';
+  if (!confirm(msg)) return;
+  var params = [
+    'symbol=XAUUSD',
+    'action=pending',
+    'type=' + type,
+    'price=' + parseFloat(entryPrice).toFixed(2),
+    'volume=' + parseFloat(lot).toFixed(2),
+    'sl=' + parseFloat(slPrice).toFixed(2),
+    'tp=' + parseFloat(tpPrice).toFixed(2)
+  ];
+  var link = 'metatrader4://trade?' + params.join('&');
+  var a = document.createElement('a');
+  a.href = link;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setStatus(label + ' sent to MT4 (' + mt4Mode + ')', '#00c853');
+  sendTg('[' + label + '] XAU/USD | Entry: $' + parseFloat(entryPrice).toFixed(2) + ' | SL: $' + parseFloat(slPrice).toFixed(2) + ' | TP: $' + parseFloat(tpPrice).toFixed(2) + ' | Lot: ' + lot + ' | ' + mt4Mode.toUpperCase(), 'MANUAL');
 }
 
 window.onload = init;
