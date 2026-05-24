@@ -584,10 +584,10 @@ var GBP = 0.79, P = '\u00a3';
 
 // ── STYLES ───────────────────────────────────────────────
 var STYLES = {
-  micro:   { name:'MICRO SCALP', icon:'\u26a1\u26a1', interval:'5min',  bars:20, btBars:90, autoMs:300000,  autoLbl:'5min',  desc:'~1.5hrs', tpDesc:'$1-$5',   lvl:function(s){ return s>=85?{tp1:3,tp2:6,tp3:12,sl:4}:s>=70?{tp1:2,tp2:4,tp3:8,sl:3}:{tp1:1,tp2:2,tp3:5,sl:2}; } },
-  scalp:   { name:'SCALP',       icon:'\u26a1',       interval:'15min', bars:16, btBars:90, autoMs:600000,  autoLbl:'10min', desc:'~4hrs',   tpDesc:'$5-$50',  lvl:function(s){ return s>=85?{tp1:12,tp2:25,tp3:50,sl:10}:s>=70?{tp1:8,tp2:18,tp3:35,sl:8}:{tp1:5,tp2:10,tp3:20,sl:6}; } },
-  intraday:{ name:'INTRADAY',    icon:'\ud83d\udcc8', interval:'1h',    bars:24, btBars:90, autoMs:1800000, autoLbl:'30min', desc:'~24hrs',  tpDesc:'$20-$100',lvl:function(s){ return s>=85?{tp1:35,tp2:70,tp3:120,sl:28}:s>=70?{tp1:22,tp2:50,tp3:90,sl:20}:{tp1:12,tp2:28,tp3:55,sl:12}; } },
-  swing:   { name:'SWING',       icon:'\ud83c\udf0a', interval:'4h',    bars:30, btBars:90, autoMs:7200000, autoLbl:'2hr',   desc:'~5 days', tpDesc:'$50-$300',lvl:function(s){ return s>=85?{tp1:80,tp2:160,tp3:300,sl:60}:s>=70?{tp1:50,tp2:110,tp3:200,sl:40}:{tp1:28,tp2:65,tp3:120,sl:25}; } }
+  micro:   { name:'MICRO SCALP', icon:'\u26a1\u26a1', interval:'5min',  bars:20, btBars:90, autoMs:300000,  autoLbl:'5min',  desc:'~1.5hrs', tpDesc:'$1-$6',   lvl:function(s){ return s>=85?{tp1:3,tp2:6,tp3:10,sl:6}:s>=70?{tp1:2,tp2:5,tp3:8,sl:5}:{tp1:1,tp2:3,tp3:6,sl:3}; } },
+  scalp:   { name:'SCALP',       icon:'\u26a1',       interval:'15min', bars:16, btBars:90, autoMs:600000,  autoLbl:'10min', desc:'~4hrs',   tpDesc:'$5-$40',  lvl:function(s){ return s>=85?{tp1:12,tp2:25,tp3:40,sl:10}:s>=70?{tp1:8,tp2:18,tp3:30,sl:8}:{tp1:5,tp2:12,tp3:22,sl:8}; } },
+  intraday:{ name:'INTRADAY',    icon:'\ud83d\udcc8', interval:'1h',    bars:24, btBars:90, autoMs:1800000, autoLbl:'30min', desc:'~24hrs',  tpDesc:'$20-$100',lvl:function(s){ return s>=85?{tp1:35,tp2:70,tp3:120,sl:28}:s>=70?{tp1:22,tp2:50,tp3:90,sl:20}:{tp1:15,tp2:35,tp3:70,sl:18}; } },
+  swing:   { name:'SWING',       icon:'\ud83c\udf0a', interval:'4h',    bars:30, btBars:90, autoMs:7200000, autoLbl:'2hr',   desc:'~5 days', tpDesc:'$50-$280',lvl:function(s){ return s>=85?{tp1:80,tp2:160,tp3:280,sl:60}:s>=70?{tp1:50,tp2:110,tp3:200,sl:40}:{tp1:40,tp2:85,tp3:160,sl:35}; } }
 };
 function C() { return STYLES[currentStyle]; }
 function gbp(m, l) { return (m * l * 100 * GBP).toFixed(2); }
