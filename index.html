@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -303,7 +302,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 .modal-border-buy{border:2px solid #00c853;}
 .modal-border-sell{border:2px solid #ff4444;}
 </style>
-
 </head>
 <body>
 <header>
@@ -312,7 +310,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 <div class="wrap">
 
 <!-- LIVE PRICE -->
-
 <div class="card">
   <div class="live-label"><span class="dot pulsing" id="liveDot"></span>XAU/USD LIVE PRICE</div>
   <div id="livePrice">--</div>
@@ -327,7 +324,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- CHART -->
-
 <div class="card-dim">
   <div class="chart-hdr"><div class="chart-ttl">XAU/USD Price Chart</div><div class="chart-inf" id="chartInf">Updates on signal fetch</div></div>
   <canvas id="priceChart"></canvas>
@@ -335,7 +331,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- SIGNAL BUTTON -->
-
 <button class="btn-main" id="signalBtn">
   <div class="spinner" id="spinner"></div>
   <span id="signalBtnTxt">GET GOLD SIGNAL</span>
@@ -344,7 +339,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 <div class="status-bar"><span class="dot" id="statusDot"></span><span id="statusTxt">Save your API key to begin</span></div>
 
 <!-- STYLE SELECTOR -->
-
 <div>
   <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:700;letter-spacing:1px;">TRADING STYLE</div>
   <div class="style-btns">
@@ -357,7 +351,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- DANGER + NEWS -->
-
 <div class="danger-box" id="dangerBox">
   <div class="danger-ttl" id="dangerTtl">&#128721; HIGH IMPACT EVENT</div>
   <div class="danger-sub" id="dangerSub"></div>
@@ -380,7 +373,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- LOT / STRENGTH / BALANCE -->
-
 <div class="row3">
   <div class="row-box"><label>LOT SIZE</label><input type="number" id="lotSize" value="0.02" min="0.01" max="10" step="0.01"></div>
   <div class="row-box"><label>MIN STR</label><input type="number" id="minStr" value="60" min="35" max="95"><span class="unit">%</span></div>
@@ -388,7 +380,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- RISK CARD -->
-
 <div class="risk-card" id="riskCard">
   <div class="risk-ttl">&#128200; LOT RISK CALCULATOR</div>
   <div class="risk3">
@@ -400,13 +391,11 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- ERROR / BLOCK / REVERSAL -->
-
 <div class="err-box" id="errBox"></div>
 <div class="rev-box" id="revBox"><div class="rev-ttl">&#128256; REVERSAL DETECTED</div><div class="rev-sub" id="revSub"></div></div>
 <div class="block-box" id="blockBox"><div class="block-ttl">&#128721; SIGNAL BLOCKED</div><div class="block-sub" id="blockSub"></div></div>
 
 <!-- INDICATORS -->
-
 <div class="ind-bar" id="indBar">
   <div class="ind-box"><div class="il">EMA 9</div><div class="iv" id="iE9">--</div><div class="is">Short</div></div>
   <div class="ind-box"><div class="il">EMA 21</div><div class="iv" id="iE21">--</div><div class="is">Mid</div></div>
@@ -415,7 +404,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- VERDICT -->
-
 <div class="verdict" id="verdict">
   <div class="vdir" id="vDir">--</div>
   <div class="vsub" id="vSub">--</div>
@@ -454,7 +442,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- STATS -->
-
 <div class="stats4">
   <div class="stat-box"><div class="stat-lbl">WINS</div><div class="stat-val sv-win" id="statW">0</div></div>
   <div class="stat-box"><div class="stat-lbl">LOSSES</div><div class="stat-val sv-loss" id="statL">0</div></div>
@@ -463,14 +450,12 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- LOG -->
-
 <div class="log-card">
   <div class="log-hdr">Signal Log <button class="btn-clr" id="btnClr">Clear</button></div>
   <div id="logList"><div class="log-empty">No signals yet</div></div>
 </div>
 
 <!-- JOURNAL -->
-
 <div class="panel" id="journalPanel">
   <div class="panel-hdr" id="journalHdr">
     <div class="panel-ttl">&#128196; Journal Analyser</div>
@@ -497,7 +482,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- HEATMAP -->
-
 <div class="panel" id="heatmapPanel">
   <div class="panel-hdr" id="heatmapHdr">
     <div class="panel-ttl">&#128337; Best Time of Day</div>
@@ -519,7 +503,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- API KEY -->
-
 <div class="panel" id="apiPanel">
   <div class="panel-hdr" id="apiHdr">
     <div class="panel-ttl">Twelve Data API Key <span class="panel-tick" id="apiTick" style="display:none;">&#10003; Configured</span></div>
@@ -541,7 +524,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- TELEGRAM -->
-
 <div class="panel teal" id="tgPanel">
   <div class="panel-hdr" id="tgHdr">
     <div class="panel-ttl">Telegram Alerts <span class="panel-tick" id="tgTick" style="display:none;">&#10003; Configured</span></div>
@@ -567,7 +549,6 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 </div>
 
 <!-- BACKTEST -->
-
 <div class="panel purple" id="btPanel">
   <div class="panel-hdr" id="btHdr">
     <div class="panel-ttl">&#128300; Simulated Backtest</div>
@@ -916,10 +897,7 @@ function buildSignal(cl, hi, lo, cur, stype) {
   document.getElementById('slSub').textContent='Open MT4 \u2192 long-press trade \u2192 Modify \u2192 set SL to $'+sl2;
   document.getElementById('closePrice').value='';
   addLog(activeSig); renderLog(); scrollToVerdict();
-  // Show execute prompt for strong signals
-  if (activeSig && activeSig.slbl === 'STRONG') {
-    setTimeout(function(){ showExecModal(activeSig); }, 800);
-  }
+
 }
 
 function scrollToVerdict() {
@@ -932,6 +910,20 @@ function scrollToVerdict() {
 // ── GET SIGNAL ───────────────────────────────────────────
 async function getSignal() {
   if (!APIKEY) { alert('Save your API key first.'); return; }
+  // Check market is open
+  if (!isGoldMarketOpen()) {
+    showErr(getMarketOpenTime());
+    setStatus(getMarketOpenTime(), '#ff4444');
+    // Show market closed in signal button
+    document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
+    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
+    document.getElementById('signalBtn').style.color = '#888';
+    return;
+  }
+  // Restore button style
+  document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#FFD700,#cc9900)';
+  document.getElementById('signalBtn').style.color = '#000';
+  document.getElementById('signalBtnTxt').textContent = 'GET GOLD SIGNAL';
   setBusy(true); hideErr();
   document.getElementById('verdict').style.display='none';
   document.getElementById('blockBox').style.display='none';
@@ -959,7 +951,17 @@ async function getSignal() {
 
 // ── AUTO ─────────────────────────────────────────────────
 async function autoCheck() {
-  if (!APIKEY) return; refreshNews();
+  if (!APIKEY) return;
+  if (!isGoldMarketOpen()) {
+    setStatus(getMarketOpenTime(), '#888');
+    document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
+    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
+    document.getElementById('signalBtn').style.color = '#888';
+    return;
+  }
+  document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#FFD700,#cc9900)';
+  document.getElementById('signalBtn').style.color = '#000';
+  refreshNews();
   try {
     var data=await fetchCandles(); if (!data) return;
     var cl=data.map(function(x){return parseFloat(x.close);}),
@@ -1287,6 +1289,13 @@ function init() {
 
   // Risk
   updateRisk();
+  // Check market status on load
+  if (!isGoldMarketOpen()) {
+    document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
+    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
+    document.getElementById('signalBtn').style.color = '#888';
+    setStatus(getMarketOpenTime(), '#888');
+  }
 
   // News
   refreshNews(); newsTimer=setInterval(refreshNews,60000);
@@ -1384,11 +1393,6 @@ function init() {
   document.getElementById('btnModeDemo').addEventListener('click', function(){ setMt4Mode('demo'); });
   setMt4Mode(mt4Mode);
 
-  // Execute modal buttons
-  document.getElementById('execYes').addEventListener('click', executeTradeInMT4);
-  document.getElementById('execNo').addEventListener('click', hideExecModal);
-  document.getElementById('execModal').addEventListener('click', function(e){ if(e.target===this) hideExecModal(); });
-
   // Resize chart
   window.addEventListener('resize', function(){ if(candleCloses.length) drawChart(candleCloses); });
 }
@@ -1459,79 +1463,57 @@ function placeMT4Order(type) {
 
 
 // EXECUTE TRADE MODAL
-function showExecModal(sig) {
-  if (!sig || sig.slbl !== 'STRONG') return;
-  var modal = document.getElementById('execModal');
-  var box = document.getElementById('execModalBox');
-  var dir = sig.dir;
-  // Set direction
-  var dirEl = document.getElementById('execDir');
-  dirEl.textContent = dir;
-  dirEl.className = 'modal-dir ' + dir;
-  box.className = 'modal-box modal-border-' + (dir === 'BUY' ? 'buy' : 'sell');
-  // Set details
-  document.getElementById('execStrength').textContent = sig.slbl + ' ' + sig.st + '% signal';
-  document.getElementById('execStrength').style.color = '#00c853';
-  document.getElementById('execPrice').textContent = 'XAU/USD at $' + sig.entry.toFixed(2);
-  document.getElementById('execEntry').textContent = '$' + sig.entry.toFixed(2);
-  document.getElementById('execTp1').textContent = '$' + sig.tp1.toFixed(2) + ' (+' + window.P + sig.g1 + ')';
-  document.getElementById('execTp2').textContent = '$' + sig.tp2.toFixed(2) + ' (+' + window.P + sig.g2 + ')';
-  document.getElementById('execSl').textContent = '$' + sig.sl.toFixed(2) + ' (-' + window.P + sig.gs + ')';
-  document.getElementById('execLot').textContent = sig.lot + ' lots';
-  // Vibrate
-  if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
-  // Show modal
-  modal.classList.add('show');
+
+
+
+// GOLD MARKET HOURS CHECK
+// Gold trades Sun 23:00 - Fri 22:00 UK time (BST)
+// Closed: Fri 22:00 - Sun 23:00
+function isGoldMarketOpen() {
+  var now = new Date();
+  var day = now.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+  var h = now.getHours();
+  var m = now.getMinutes();
+  var hm = h * 100 + m;
+
+  // Saturday - always closed
+  if (day === 6) return false;
+  // Friday after 22:00 - closed
+  if (day === 5 && hm >= 2200) return false;
+  // Sunday before 23:00 - closed
+  if (day === 0 && hm < 2300) return false;
+
+  return true;
 }
 
-function hideExecModal() {
-  document.getElementById('execModal').classList.remove('show');
-}
+function getMarketOpenTime() {
+  var now = new Date();
+  var day = now.getDay();
+  var h = now.getHours();
+  var hm = h * 100 + now.getMinutes();
 
-function executeTradeInMT4() {
-  if (!activeSig) { hideExecModal(); return; }
-  var action = activeSig.dir === 'BUY' ? 'buy' : 'sell';
-  var params = [
-    'symbol=XAUUSD',
-    'action=' + action,
-    'volume=' + parseFloat(activeSig.lot).toFixed(2),
-    'sl=' + parseFloat(activeSig.sl).toFixed(2),
-    'tp=' + parseFloat(activeSig.tp1).toFixed(2)
-  ];
-  var link = 'metatrader4://trade?' + params.join('&');
-  var a = document.createElement('a');
-  a.href = link;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  hideExecModal();
-  setStatus(activeSig.dir + ' order sent to MT4', '#00c853');
+  if (day === 6) {
+    // Saturday - opens Sunday 23:00
+    var diff = ((24 - h) * 60 - now.getMinutes()) + (23 * 60); // mins to Sun 23:00
+    var hrs = Math.floor(diff / 60);
+    var mins = diff % 60;
+    return 'Market closed. Opens Sunday at 23:00 UK (' + hrs + 'hr ' + mins + 'min)';
+  }
+  if (day === 0 && hm < 2300) {
+    var minsLeft = (23 * 60) - (h * 60 + now.getMinutes());
+    var hrs2 = Math.floor(minsLeft / 60);
+    var mins2 = minsLeft % 60;
+    return 'Market closed. Opens tonight at 23:00 UK (' + hrs2 + 'hr ' + mins2 + 'min)';
+  }
+  if (day === 5 && hm >= 2200) {
+    return 'Market closed for the weekend. Opens Sunday at 23:00 UK';
+  }
+  return 'Market is open';
 }
 
 window.onload = init;
 </script>
 
-<!-- EXECUTE TRADE MODAL -->
-
-<div class="modal-overlay" id="execModal">
-  <div class="modal-box" id="execModalBox">
-    <div style="font-size:11px;color:#FFD700;font-weight:700;letter-spacing:1px;margin-bottom:8px;">STRONG SIGNAL DETECTED</div>
-    <div class="modal-dir" id="execDir">BUY</div>
-    <div class="modal-strength" id="execStrength"></div>
-    <div class="modal-price" id="execPrice"></div>
-    <div class="modal-levels">
-      <div class="modal-row"><span class="ml">Entry</span><span class="mv" id="execEntry">--</span></div>
-      <div class="modal-row"><span class="ml">TP1</span><span class="mv tp" id="execTp1">--</span></div>
-      <div class="modal-row"><span class="ml">TP2</span><span class="mv tp" id="execTp2">--</span></div>
-      <div class="modal-row"><span class="ml">Stop Loss</span><span class="mv sl" id="execSl">--</span></div>
-      <div class="modal-row"><span class="ml">Lot Size</span><span class="mv" id="execLot">--</span></div>
-    </div>
-    <div class="modal-action">Tap EXECUTE to open MT4 trade screen.<br>Confirm in MT4 to place the order.</div>
-    <div class="modal-btns">
-      <button class="modal-btn-no" id="execNo">SKIP</button>
-      <button class="modal-btn-yes" id="execYes">EXECUTE</button>
-    </div>
-  </div>
-</div>
+<!-- EXECUTE MODAL REMOVED -->
 </body>
 </html>
