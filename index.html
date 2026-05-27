@@ -420,16 +420,16 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
     <div class="tp-box tp3"><div class="tl">&#128640; TP3</div><div class="tv" id="tp3v">--</div><div class="ts" id="tp3s">--</div><div class="tp" id="tp3p">--</div></div>
   </div>
   <div class="sl-box"><div class="tl">&#128721; STOP LOSS</div><div class="tv" id="slv">--</div><div class="ts" id="sls">--</div><div class="tp" id="slp">--</div></div>
-  <div class="sl-remind"><div class="sl-remind-ttl">&#128721; SET STOP LOSS IN MT4 NOW!</div><div class="sl-remind-sub" id="slSub">Open MT4 &rarr; long-press trade &rarr; Modify &rarr; set SL</div></div>
+  <div class="sl-remind"><div class="sl-remind-ttl">&#128721; SET STOP LOSS IN MT5 NOW!</div><div class="sl-remind-sub" id="slSub">Open MT5 &rarr; long-press trade &rarr; Modify &rarr; set SL</div></div>
   <div class="mt4-wrap" id="mt4Wrap">
-    <div class="mt4-ttl">&#128241; PLACE IN MT4</div>
-    <div class="mt4-sub">Tap to open MT4 with a market order pre-filled at current price, with your SL and TP1 set automatically. You confirm in MT4 before it executes.</div>
+    <div class="mt4-ttl">&#128241; PLACE IN MT5</div>
+    <div class="mt4-sub">Tap to copy trade details to clipboard, then MT5 opens. Paste or use the copied values to fill your order in MT5.</div>
     <div class="mt4-mode" id="mt4ModeNote">Mode: <b id="mt4ModeTxt">Live</b> &mdash; change in API Key panel</div>
     <div class="mt4-btns">
-      <button class="btn-bs" id="btnBuyStop">&#9650; BUY NOW<br><small style="font-weight:400;font-size:10px;">Market order</small></button>
-      <button class="btn-ss" id="btnSellStop">&#9660; SELL NOW<br><small style="font-weight:400;font-size:10px;">Market order</small></button>
+      <button class="btn-bs" id="btnBuyStop">&#9650; BUY NOW<br><small style="font-weight:400;font-size:10px;">Copies &amp; opens MT5</small></button>
+      <button class="btn-ss" id="btnSellStop">&#9660; SELL NOW<br><small style="font-weight:400;font-size:10px;">Copies &amp; opens MT5</small></button>
     </div>
-    <div class="mt4-note">MT4 opens with entry, SL and TP pre-filled. Review before confirming.</div>
+    <div class="mt4-note">Trade details copied to clipboard. MT5 opens — paste lot/SL/TP into your order.</div>
   </div>
   <div class="close-wrap">
     <div class="close-lbl">Enter exit price when trade closes:</div>
@@ -462,8 +462,8 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
     <span class="panel-arrow" id="journalArrow">&#9660;</span>
   </div>
   <div class="panel-body" id="journalBody">
-    <div class="panel-sub">Paste MT4 journal text and tap Analyse. Extracts trades, P&amp;L, win rate and flags no-SL trades.</div>
-    <textarea id="journalInput" style="width:100%;height:120px;background:#0a0e00;border:1px solid #FFD70044;color:#ccc;border-radius:9px;padding:10px;font-size:11px;resize:vertical;" placeholder="Paste your MT4 journal text here..."></textarea>
+    <div class="panel-sub">Paste MT5 journal text and tap Analyse. Extracts trades, P&amp;L, win rate and flags no-SL trades.</div>
+    <textarea id="journalInput" style="width:100%;height:120px;background:#0a0e00;border:1px solid #FFD70044;color:#ccc;border-radius:9px;padding:10px;font-size:11px;resize:vertical;" placeholder="Paste your MT5 journal text here..."></textarea>
     <button class="btn-parse" id="btnParse">&#128202; Analyse Journal</button>
     <div id="journalResults" style="display:none;margin-top:10px;">
       <div class="jr3">
@@ -511,12 +511,12 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
   <div class="panel-body" id="apiBody">
     <div class="panel-sub">Free at <b>twelvedata.com</b> &mdash; saved on device only.</div>
     <div style="background:#0a0e00;border:1px solid #FFD70022;border-radius:9px;padding:10px 14px;margin-bottom:10px;">
-      <div style="font-size:11px;color:#FFD700;font-weight:700;margin-bottom:6px;">MT4 Account Mode</div>
+      <div style="font-size:11px;color:#FFD700;font-weight:700;margin-bottom:6px;">MT5 Account Mode</div>
       <div style="display:flex;gap:8px;margin-bottom:6px;">
         <button class="tg-btn active" id="btnModeLive">LIVE</button>
         <button class="tg-btn" id="btnModeDemo">DEMO</button>
       </div>
-      <div style="font-size:10px;color:#888;" id="mt4ModeDesc">Orders will deep-link to your live MT4 account</div>
+      <div style="font-size:10px;color:#888;" id="mt4ModeDesc">Orders will open your live MT5 account</div>
     </div>
     <div class="inp-row"><input type="password" id="apiInput" placeholder="Paste API key"><button class="btn-gold" id="apiSaveBtn">Save</button></div>
     <div class="ok-msg ok-gold" id="apiOk">&#10003; API key saved</div>
@@ -879,7 +879,7 @@ function buildSignal(cl, hi, lo, cur, stype) {
   var em=dir==='BUY'?'\ud83d\udfe2':'\ud83d\udd34';
   var tl=stype==='AUTO'?'\ud83d\udfe0 AUTO':'\u270b MANUAL';
   var nNote=newsDanger?'\n\ud83d\uded1 WARNING: High impact news active \u2014 reduced strength':newsWarn?'\n\u26a0\ufe0f High impact news approaching':'';
-  sendTg(em+' <b>'+dir+' \u2014 XAU/USD GOLD</b>\n'+tl+' \u00b7 '+c.name+'\nStrength: <b>'+slbl+' ('+st+'%)</b>'+nNote+'\n\nEntry: <b>$'+cur.toFixed(2)+'</b>\n\ud83c\udfaf TP1: $'+tp1+' (+$'+lv.tp1+' = +'+P+g1+')\n\ud83d\udcb0 TP2: $'+tp2+' (+$'+lv.tp2+' = +'+P+g2+')\n\ud83d\ude80 TP3: $'+tp3+' (+$'+lv.tp3+' = +'+P+g3+')\n\ud83d\uded1 SL: $'+sl2+' (-$'+lv.sl+' = -'+P+gs+')\n\n\ud83d\udea8 SET STOP LOSS IN MT4 NOW!\nLot: '+lot+' | EMA9: $'+e9+' | RSI: '+r+'\n'+c.interval+' | '+cl.length+' bars | '+c.desc, stype);
+  sendTg(em+' <b>'+dir+' \u2014 XAU/USD GOLD</b>\n'+tl+' \u00b7 '+c.name+'\nStrength: <b>'+slbl+' ('+st+'%)</b>'+nNote+'\n\nEntry: <b>$'+cur.toFixed(2)+'</b>\n\ud83c\udfaf TP1: $'+tp1+' (+$'+lv.tp1+' = +'+P+g1+')\n\ud83d\udcb0 TP2: $'+tp2+' (+$'+lv.tp2+' = +'+P+g2+')\n\ud83d\ude80 TP3: $'+tp3+' (+$'+lv.tp3+' = +'+P+g3+')\n\ud83d\uded1 SL: $'+sl2+' (-$'+lv.sl+' = -'+P+gs+')\n\n\ud83d\udea8 SET STOP LOSS IN MT5 NOW!\nLot: '+lot+' | EMA9: $'+e9+' | RSI: '+r+'\n'+c.interval+' | '+cl.length+' bars | '+c.desc, stype);
   // Render verdict
   var ve=document.getElementById('verdict'); ve.style.display='block'; ve.className='verdict '+(dir==='BUY'?'v-buy':'v-sell');
   document.getElementById('vDir').textContent=dir; document.getElementById('vDir').className='vdir '+(dir==='BUY'?'vdir-buy':'vdir-sell');
@@ -894,7 +894,7 @@ function buildSignal(cl, hi, lo, cur, stype) {
   document.getElementById('tp2v').textContent='$'+tp2; document.getElementById('tp2s').textContent='+$'+lv.tp2; document.getElementById('tp2p').textContent='+'+P+g2;
   document.getElementById('tp3v').textContent='$'+tp3; document.getElementById('tp3s').textContent='+$'+lv.tp3; document.getElementById('tp3p').textContent='+'+P+g3;
   document.getElementById('slv').textContent='$'+sl2; document.getElementById('sls').textContent='-$'+lv.sl; document.getElementById('slp').textContent='-'+P+gs;
-  document.getElementById('slSub').textContent='Open MT4 \u2192 long-press trade \u2192 Modify \u2192 set SL to $'+sl2;
+  document.getElementById('slSub').textContent='Open MT5 \u2192 long-press trade \u2192 Modify \u2192 set SL to $'+sl2;
   document.getElementById('closePrice').value='';
   addLog(activeSig); renderLog(); scrollToVerdict();
 
@@ -1085,7 +1085,7 @@ function updateStats() {
 // ── JOURNAL ──────────────────────────────────────────────
 function parseJournal() {
   var text=document.getElementById('journalInput').value;
-  if (!text.trim()) { alert('Paste your MT4 journal first.'); return; }
+  if (!text.trim()) { alert('Paste your MT5 journal first.'); return; }
   var trades={};
   var openRe=/(\d{2}:\d{2}:\d{2}).*order is open : #(\d+) (buy|sell) ([\d.]+) XAUUSD.*at ([\d.]+)/gi;
   var closeRe=/(\d{2}:\d{2}:\d{2}).*order #(\d+) (buy|sell) ([\d.]+) XAUUSD.*closed at price ([\d.]+)/gi;
@@ -1410,11 +1410,11 @@ function setMt4Mode(mode) {
   var note = document.getElementById('mt4ModeTxt');
   if (mode === 'demo') {
     lb.classList.remove('active'); db.classList.add('active');
-    if (desc) desc.textContent = 'Orders will deep-link to your DEMO MT4 account';
+    if (desc) desc.textContent = 'Orders will open your DEMO MT5 account';
     if (note) note.textContent = 'Demo';
   } else {
     lb.classList.add('active'); db.classList.remove('active');
-    if (desc) desc.textContent = 'Orders will deep-link to your live MT4 account';
+    if (desc) desc.textContent = 'Orders will open your live MT5 account';
     if (note) note.textContent = 'Live';
   }
 }
@@ -1435,29 +1435,55 @@ function placeMT4Order(type) {
     action  = 'sell';
   }
   var entryPrice = activeSig.entry;
-  var msg = label + ' MARKET ORDER\n\n'
-    + 'Symbol:      XAU/USD\n'
-    + 'Entry:       $' + parseFloat(entryPrice).toFixed(2) + ' (market price)\n'
-    + 'Stop Loss:   $' + parseFloat(slPrice).toFixed(2) + '\n'
-    + 'Take Profit: $' + parseFloat(tpPrice).toFixed(2) + '\n'
-    + 'Lot Size:    ' + lot + '\n'
-    + 'Mode:        ' + mt4Mode.toUpperCase() + '\n\n'
-    + 'Tap OK to open MT4. SET YOUR SL IMMEDIATELY after placing.';
+
+  // Build clipboard text — paste these values into MT5 order screen
+  var clipText = label + ' XAUUSD\n'
+    + 'Lots: ' + parseFloat(lot).toFixed(2) + '\n'
+    + 'SL: ' + parseFloat(slPrice).toFixed(2) + '\n'
+    + 'TP: ' + parseFloat(tpPrice).toFixed(2) + '\n'
+    + 'Entry (market): ~' + parseFloat(entryPrice).toFixed(2);
+
+  // Copy to clipboard, then open MT5
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(clipText).then(function() {
+      openMT5(label, lot, slPrice, tpPrice, action);
+    }).catch(function() {
+      // Clipboard failed silently — still open MT5
+      openMT5(label, lot, slPrice, tpPrice, action);
+    });
+  } else {
+    // Fallback for older browsers
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = clipText;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch(e) {}
+    openMT5(label, lot, slPrice, tpPrice, action);
+  }
+}
+
+function openMT5(label, lot, slPrice, tpPrice, action) {
+  var entryPrice = activeSig ? activeSig.entry : 0;
+  var msg = '📋 Trade details COPIED to clipboard!\n\n'
+    + label + ' XAUUSD\n'
+    + 'Lots: ' + parseFloat(lot).toFixed(2) + '\n'
+    + 'SL:   $' + parseFloat(slPrice).toFixed(2) + '\n'
+    + 'TP:   $' + parseFloat(tpPrice).toFixed(2) + '\n'
+    + 'Entry: ~$' + parseFloat(entryPrice).toFixed(2) + ' (market)\n\n'
+    + 'Tap OK → MT5 opens → New Order → paste/enter the values above.';
   if (!confirm(msg)) return;
-  var params = [
-    'symbol=XAUUSD',
-    'action=' + action,
-    'volume=' + parseFloat(lot).toFixed(2),
-    'sl=' + parseFloat(slPrice).toFixed(2),
-    'tp=' + parseFloat(tpPrice).toFixed(2)
-  ];
-  var link = 'metatrader4://trade?' + params.join('&');
+  // MT5 deep link — opens the app (parameter pre-fill not supported on iOS MT5)
+  var link = 'metatrader5://';
   var a = document.createElement('a');
   a.href = link;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setStatus(label + ' market order sent to MT4 (' + mt4Mode + ')', '#00c853');
+  setStatus('📋 ' + label + ' details copied — MT5 opening (' + mt4Mode + ')', '#00c853');
   sendTg('[' + label + ' MARKET] XAU/USD | SL: $' + parseFloat(slPrice).toFixed(2) + ' | TP: $' + parseFloat(tpPrice).toFixed(2) + ' | Lot: ' + lot + ' | ' + mt4Mode.toUpperCase(), 'MANUAL');
 }
 
