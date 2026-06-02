@@ -393,7 +393,7 @@ h1{font-size:17px;color:#FFD700;letter-spacing:1px;}
 <!-- LOT / STRENGTH / BALANCE -->
 <div class="row3">
   <div class="row-box"><label>LOT SIZE</label><input type="number" id="lotSize" value="0.02" min="0.01" max="10" step="0.01"></div>
-  <div class="row-box"><label>MIN STR</label><input type="number" id="minStr" value="60" min="35" max="95"><span class="unit">%</span></div>
+  <div class="row-box"><label>MIN STR</label><input type="number" id="minStr" value="75" min="35" max="95"><span class="unit">%</span></div>
   <div class="row-box"><label>BALANCE</label><input type="number" id="balance" value="1000" min="100" step="100"><span class="unit">&#163;</span></div>
 </div>
 
@@ -755,17 +755,18 @@ function updateRisk() {
   else { w.className='risk-warn rw-ok'; w.textContent='\u2705 Good: '+pct+'% per trade \u2014 within 2% rule.'; }
 }
 
-// ── FETCH ─────────────────────────────────────────────────
-async function fetchCandles(sz) {
+// ── FETCH + STRATEGY HELPERS ─────────────────────────────────
+async function fetchCandles(sz, intervalOverride) {
   var c=C(); sz=sz||c.bars;
-  var url='https://api.twelvedata.com/time_series?symbol=XAU/USD&interval='+c.interval+'&outputsize='+sz+'&exchange=OANDA&apikey='+APIKEY;
+  var interval = intervalOverride || c.interval;
+  var url='https://api.twelvedata.com/time_series?symbol=XAU/USD&interval='+interval+'&outputsize='+sz+'&exchange=OANDA&apikey='+APIKEY;
   var r=await fetch(url); var d=await r.json();
   if (d.status==='error'||!d.values||!d.values.length) return null;
   return d.values.reverse();
 }
 
 // Pulls the latest quote for the price shown on screen.
-// Candle data is still used for EMA/RSI/MACD/ATR, but this avoids showing an old candle close as the live price.
+// Candle data is still used for indicators, but the entry/visible price uses the freshest quote available.
 async function fetchLiveQuote() {
   var url='https://api.twelvedata.com/quote?symbol=XAU/USD&exchange=OANDA&apikey='+APIKEY;
   var r=await fetch(url); var d=await r.json();
@@ -781,6 +782,82 @@ async function fetchLiveQuote() {
     datetime: d.datetime || d.timestamp || null,
     source: 'quote'
   };
+}
+
+var CONFIRM_TF = { micro:'15min', scalp:'1h', intraday:'4h', swing:'1day' };
+
+async function getConfirmationTrend() {
+  var tf = CONFIRM_TF[currentStyle] || '1h';
+  var d = await fetchCandles(220, tf);
+  if (!d || d.length < 60) return { ok:false, tf:tf, dir:'UNKNOWN', strength:0, reason:'Higher timeframe data unavailable' };
+  var cl = d.map(function(x){return parseFloat(x.close);});
+  var last = cl[cl.length-1];
+  var e50 = ema(cl, 50), e200 = ema(cl, Math.min(200, cl.length));
+  var e50prev = ema(cl.slice(0, cl.length-1), 50);
+  var dir = e50 > e200 && last > e50 ? 'BUY' : e50 < e200 && last < e50 ? 'SELL' : 'MIXED';
+  var rising = e50 > e50prev;
+  var strength = dir==='MIXED' ? 35 : (rising && dir==='BUY') || (!rising && dir==='SELL') ? 85 : 65;
+  return { ok:dir!=='MIXED', tf:tf, dir:dir, strength:strength, e50:e50, e200:e200, price:last, reason:tf+' trend: EMA50 $'+e50+' vs EMA200 $'+e200 };
+}
+
+function getRoundLevelWarning(cur, dir) {
+  var levels = [0,25,50,75,100];
+  var nearest = Math.round(cur/25)*25;
+  var dist = Math.abs(cur-nearest);
+  if (dist > 7) return { block:false, points:0, text:'No close $25/$50/$100 level conflict' };
+  if (dir==='BUY' && nearest > cur) return { block:true, points:-18, text:'BUY blocked/cautioned: price is directly below key gold level $'+nearest.toFixed(2) };
+  if (dir==='SELL' && nearest < cur) return { block:true, points:-18, text:'SELL blocked/cautioned: price is directly above key gold level $'+nearest.toFixed(2) };
+  return { block:false, points:-5, text:'Near key gold level $'+nearest.toFixed(2)+' — expect reaction' };
+}
+
+function calcDynamicLevels(atr, strength) {
+  var safeAtr = Math.max(atr || 8, 2);
+  var mult = strength >= 90 ? {sl:1.35,tp1:1.2,tp2:2.2,tp3:3.8} : strength >= 80 ? {sl:1.45,tp1:1.1,tp2:2.0,tp3:3.2} : {sl:1.6,tp1:1.0,tp2:1.7,tp3:2.7};
+  return {
+    sl: parseFloat((safeAtr*mult.sl).toFixed(2)),
+    tp1: parseFloat((safeAtr*mult.tp1).toFixed(2)),
+    tp2: parseFloat((safeAtr*mult.tp2).toFixed(2)),
+    tp3: parseFloat((safeAtr*mult.tp3).toFixed(2))
+  };
+}
+
+function qualityGrade(st) {
+  if (st>=90) return { grade:'A+', label:'ELITE SETUP', color:'#00c853' };
+  if (st>=80) return { grade:'A', label:'HIGH QUALITY', color:'#00c853' };
+  if (st>=70) return { grade:'B', label:'TRADEABLE', color:'#FFD700' };
+  if (st>=60) return { grade:'C', label:'WEAK / CAUTION', color:'#ff8c00' };
+  return { grade:'D', label:'NO TRADE', color:'#ff4444' };
+}
+
+function volatilityBlock(cl, hi, lo) {
+  if (cl.length < 25) return { block:false, text:'Not enough volatility history' };
+  var a14 = atrF(hi, lo, cl, 14);
+  var a20 = atrF(hi, lo, cl, 20);
+  if (a14 > a20 * 2) return { block:true, atr:a14, normal:a20, text:'ATR spike: $'+a14+' vs normal $'+a20+' — likely news/spread spike' };
+  return { block:false, atr:a14, normal:a20, text:'ATR normal: $'+a14 };
+}
+
+function scoreDirection(cl, hi, lo, cur, mtf) {
+  var cs=coreScore(cl,hi,lo,cur), a=atrF(hi,lo,cl,14), r=cs.r, m=cs.m;
+  var e50=ema(cl,50), e200=ema(cl,Math.min(200,cl.length));
+  var b=cs.b, s=cs.s, rows=[];
+  if (e50>e200 && cur>e50) { b+=28; rows.push({t:'EMA50 > EMA200 and price above EMA50 — major bullish trend filter passed',c:'pos'}); }
+  else if (e50<e200 && cur<e50) { s+=28; rows.push({t:'EMA50 < EMA200 and price below EMA50 — major bearish trend filter passed',c:'neg'}); }
+  else rows.push({t:'EMA50/EMA200 trend filter mixed — lower reliability',c:'warn'});
+
+  var rawDir = b>=s?'BUY':'SELL';
+  if (mtf && mtf.ok && mtf.dir===rawDir) { rawDir==='BUY'?b+=25:s+=25; rows.push({t:'Higher timeframe '+mtf.tf+' confirms '+rawDir+' — reliability boost',c:'pos'}); }
+  else if (mtf && mtf.ok && mtf.dir!==rawDir) { rawDir==='BUY'?b-=35:s-=35; rows.push({t:'Higher timeframe '+mtf.tf+' disagrees — signal blocked unless score is exceptional',c:'warn'}); }
+  else rows.push({t:'Higher timeframe confirmation unavailable/mixed',c:'warn'});
+
+  var sess=sessionScore(); b+=sess.b; s+=sess.s; rows.push({t:sess.lbl,c:sess.c});
+  var df=b-s, dir=df>=0?'BUY':'SELL', st=Math.min(96, Math.round(50 + Math.abs(df)*0.9));
+  var zl=getRoundLevelWarning(cur, dir); st += zl.points; rows.push({t:zl.text,c:zl.block?'warn':'neu'});
+  var vb=volatilityBlock(cl,hi,lo); rows.push({t:vb.text,c:vb.block?'warn':'neu'});
+  if (newsDanger) { st-=35; rows.push({t:'HIGH IMPACT NEWS active — automatic no-trade filter',c:'warn'}); }
+  else if (newsWarn) { st-=15; rows.push({t:'High impact news approaching — strength reduced',c:'warn'}); }
+  st=Math.max(0,Math.min(96,Math.round(st)));
+  return { dir:dir, strength:st, b:b, s:s, e9:cs.e9, e21:cs.e21, e50:e50, e200:e200, r:r, m:m, atr:a, rows:rows, zone:zl, vol:vb, mtf:mtf };
 }
 
 // ── DRAW CHART ───────────────────────────────────────────
@@ -810,126 +887,95 @@ function drawChart(data) {
 }
 
 // ── UPDATE PRICE CARD ────────────────────────────────────
-function updatePriceCard(cl, hi, lo, cur, quote) {
+function updatePriceCard(cl, hi, lo, cur) {
   candleCloses=cl;
-  var chartCl=cl.slice();
-  chartCl[chartCl.length-1]=cur; // chart ends at the live quote, not the stale candle close
-  var highs=hi.slice(), lows=lo.slice();
-  if (quote) {
-    if (isFinite(quote.high)) highs.push(quote.high);
-    if (isFinite(quote.low)) lows.push(quote.low);
-  }
-  var lh=Math.max.apply(null,highs), ll=Math.min.apply(null,lows), lo2=cl[0];
-  var pct = quote && isFinite(quote.change) ? quote.change.toFixed(2) : ((cur-lo2)/lo2*100).toFixed(2);
-  var isUp=pct>=0;
+  var lh=Math.max.apply(null,hi), ll=Math.min.apply(null,lo), lo2=cl[0];
+  var pct=((cur-lo2)/lo2*100).toFixed(2), isUp=pct>=0;
   document.getElementById('livePrice').textContent='$'+cur.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById('livePrice').style.color='#FFD700';
-  document.getElementById('liveDot').style.background=quote?'#00c853':'#f39c12';
-  var ec=document.getElementById('livePriceChg');
-  ec.textContent=(quote?'LIVE QUOTE · ':'CANDLE CLOSE · ')+(isUp?'\u25b2 +':'\u25bc ')+Math.abs(pct)+'%';
-  ec.className=isUp?'up':'dn';
+  document.getElementById('liveDot').style.background='#00c853';
+  var ec=document.getElementById('livePriceChg'); ec.textContent=(isUp?'\u25b2 +':'\u25bc ')+Math.abs(pct)+'% today'; ec.className=isUp?'up':'dn';
   document.getElementById('liveHigh').textContent='$'+lh.toFixed(2);
   document.getElementById('liveLow').textContent='$'+ll.toFixed(2);
   var ch=document.getElementById('liveChange'); ch.textContent=(pct>=0?'+':'')+pct+'%'; ch.className=pct>=0?'up':'dn';
-  document.getElementById('liveUpdated').textContent=quote && quote.datetime ? quote.datetime : new Date().toLocaleTimeString();
+  document.getElementById('liveUpdated').textContent=new Date().toLocaleTimeString();
   var sl=sessLbl(); document.getElementById('sessionLbl').textContent=sl[0]; document.getElementById('sessionLbl').style.color=sl[1];
-  drawChart(chartCl);
+  drawChart(cl);
 }
 
 // ── BUILD SIGNAL ─────────────────────────────────────────
-function buildSignal(cl, hi, lo, cur, stype) {
-  var c=C(), cs=coreScore(cl,hi,lo,cur);
-  var b=cs.b, s=cs.s, e9=cs.e9, e21=cs.e21, r=cs.r, m=cs.m, a=atrF(hi,lo,cl,14);
+async function buildSignal(cl, hi, lo, cur, stype, mtf) {
+  var c=C(), score=scoreDirection(cl,hi,lo,cur,mtf||{ok:false});
+  var dir=score.dir, st=score.strength, a=score.atr;
+  var th=parseInt(document.getElementById('minStr').value)||75;
+  var q=qualityGrade(st);
+  var rev=detectRev(cl,hi,lo);
+
   // Indicators
   function si(id,v,col){var el=document.getElementById(id);el.textContent=v;el.style.color=col;}
-  si('iE9','$'+e9, e9<cur?'#00c853':'#ff4444');
-  si('iE21','$'+e21, e21<cur?'#00c853':'#ff4444');
-  si('iRsi',''+r, r>70?'#ff4444':r<30?'#00c853':'#FFD700');
+  si('iE9','$'+score.e50, score.e50>score.e200?'#00c853':'#ff4444');
+  si('iE21','$'+score.e200, score.e50>score.e200?'#00c853':'#ff4444');
+  si('iRsi',''+score.r, score.r>70?'#ff4444':score.r<30?'#00c853':'#FFD700');
   si('iAtr','$'+a,'#FFD700');
-  // Analysis rows
-  var rs=[];
-  if (e9>e21&&cur>e9) rs.push({t:'EMA9 ($'+e9+') above EMA21 ($'+e21+') \u2014 bullish stack',c:'pos'});
-  else if (e9<e21&&cur<e9) rs.push({t:'EMA9 ($'+e9+') below EMA21 ($'+e21+') \u2014 bearish stack',c:'neg'});
-  else if (e9>e21) rs.push({t:'EMA9 above EMA21 \u2014 uptrend',c:'pos'});
-  else rs.push({t:'EMA9 below EMA21 \u2014 downtrend',c:'neg'});
-  if (r>70) rs.push({t:'RSI '+r+' \u2014 overbought',c:'neg'});
-  else if (r<30) rs.push({t:'RSI '+r+' \u2014 oversold',c:'pos'});
-  else if (r>=55&&r<=70) rs.push({t:'RSI '+r+' \u2014 bullish momentum',c:'pos'});
-  else if (r>=30&&r<=45) rs.push({t:'RSI '+r+' \u2014 bearish momentum',c:'neg'});
-  else rs.push({t:'RSI '+r+' \u2014 neutral',c:'neu'});
-  if (m.cu) rs.push({t:'MACD crossed above zero \u2014 bullish',c:'pos'});
-  else if (m.cd) rs.push({t:'MACD crossed below zero \u2014 bearish',c:'neg'});
-  else if (m.az&&m.h>0) rs.push({t:'MACD above zero rising',c:'pos'});
-  else if (!m.az&&m.h<0) rs.push({t:'MACD below zero falling',c:'neg'});
-  else rs.push({t:'MACD mixed',c:'neu'});
-  rs.push({t:'ATR $'+a+' | '+c.interval+' | '+cl.length+' bars | '+c.desc,c:'neu'});
-  var n100=Math.round(cur/100)*100, d100=cur-n100;
-  if (Math.abs(d100)<15) {
-    if (d100>0&&d100<8) rs.push({t:'Just above $'+n100+' resistance',c:'neg'});
-    else if (d100<0&&Math.abs(d100)<8) rs.push({t:'Just below $'+n100+' support',c:'pos'});
-  }
-  var ex=(cur-e21)/e21*100;
-  if (ex>0.5) rs.push({t:'Price '+ex.toFixed(2)+'% above EMA21',c:'neg'});
-  else if (ex<-0.5) rs.push({t:'Price '+Math.abs(ex).toFixed(2)+'% below EMA21',c:'pos'});
-  var ss=sessionScore(); b+=ss.b; s+=ss.s; rs.push({t:ss.lbl,c:ss.c});
-  var tc=trendConfirm(cl); rs.push({t:tc.lbl,c:tc.ok?'pos':'neu'});
-  var rev=detectRev(cl,hi,lo); if (rev.ok) rs.push({t:'\ud83d\udfe3 REVERSAL: '+rev.msg.split('\u2014')[0].trim(),c:'rev'});
-  var cf=conflict(b,s,tc);
-  if (cf.ok) {
+
+  var rows=[];
+  rows.push({t:'NEW STRATEGY: multi-timeframe confirmation + EMA50/EMA200 trend filter + ATR dynamic levels',c:'neu'});
+  rows=rows.concat(score.rows);
+  rows.push({t:'EMA50 $'+score.e50+' | EMA200 $'+score.e200+' | RSI '+score.r+' | ATR $'+a,c:'neu'});
+  if (score.m.cu) rows.push({t:'MACD crossed above zero — bullish momentum',c:'pos'});
+  else if (score.m.cd) rows.push({t:'MACD crossed below zero — bearish momentum',c:'neg'});
+  else rows.push({t:'MACD histogram '+score.m.h+' — '+(score.m.h>=0?'bullish':'bearish')+' pressure',c:score.m.h>=0?'pos':'neg'});
+  if (rev.ok) rows.push({t:'REVERSAL WARNING: '+rev.msg,c:'rev'});
+
+  var shouldBlock=false, blockReasons=[];
+  if (newsDanger) { shouldBlock=true; blockReasons.push('High impact news is active.'); }
+  if (score.vol.block) { shouldBlock=true; blockReasons.push(score.vol.text); }
+  if (score.mtf && score.mtf.ok && score.mtf.dir !== dir && st < 92) { shouldBlock=true; blockReasons.push('Higher timeframe trend disagrees with '+dir+'.'); }
+  if (score.zone.block && st < 88) { shouldBlock=true; blockReasons.push(score.zone.text); }
+  if (st < th) { shouldBlock=true; blockReasons.push('Strength '+st+'% is below minimum '+th+'%.'); }
+
+  if (shouldBlock) {
     document.getElementById('blockBox').style.display='block';
-    var bt='<b>Signal blocked:</b><br>'; cf.reasons.forEach(function(r2){bt+='\u2022 '+r2+'<br>';}); bt+='<br>Wait for a cleaner setup.';
-    document.getElementById('blockSub').innerHTML=bt;
-    sendTg('\ud83d\uded1 <b>SIGNAL BLOCKED \u2014 XAU/USD</b>\n'+cf.reasons.join('\n')+'\n\nDo not trade. Wait for clearer setup.', stype);
+    document.getElementById('blockSub').innerHTML='<b>No trade:</b><br>• '+blockReasons.join('<br>• ')+'<br><br>Wait for an A or A+ setup.';
     var ve=document.getElementById('verdict'); ve.style.display='block'; ve.className='verdict v-block';
-    document.getElementById('vDir').textContent='\ud83d\uded1 BLOCKED'; document.getElementById('vDir').className='vdir vdir-block';
-    document.getElementById('vSub').textContent='Conflicting signals \u2014 do not trade';
-    document.getElementById('vBadge').innerHTML='<span class="trend-badge tb-bad">'+tc.lbl+'</span>';
-    var df2=b-s, st2=Math.max(20,Math.round(Math.abs(df2)<6?35+Math.abs(df2):Math.min(95,48+Math.abs(df2)*1.1))-20);
-    document.getElementById('strFill').style.cssText='width:'+st2+'%;background:#ff4444';
-    document.getElementById('strPct').textContent=st2+'%';
-    document.getElementById('strLbl').textContent='BLOCKED'; document.getElementById('strLbl').style.color='#ff4444';
-    document.getElementById('analysisList').innerHTML=rs.map(function(x){return '<div class="arow '+x.c+'"><span>'+(x.c==='pos'?'+ ':x.c==='neg'?'- ':'* ')+'</span><span>'+x.t+'</span></div>';}).join('');
+    document.getElementById('vDir').textContent='🛑 NO TRADE'; document.getElementById('vDir').className='vdir vdir-block';
+    document.getElementById('vSub').textContent=q.grade+' grade · '+q.label+' · Strategy filter blocked this setup';
+    document.getElementById('vBadge').innerHTML='<span class="trend-badge tb-bad">'+blockReasons[0]+'</span>';
+    document.getElementById('strFill').style.cssText='width:'+st+'%;background:'+q.color;
+    document.getElementById('strPct').textContent=st+'%';
+    document.getElementById('strLbl').textContent=q.grade+' · '+q.label; document.getElementById('strLbl').style.color=q.color;
+    document.getElementById('analysisList').innerHTML=rows.map(function(x){return '<div class="arow '+x.c+'"><span>'+(x.c==='pos'?'+ ':x.c==='neg'?'- ':x.c==='warn'?'⚠ ':x.c==='rev'?'🟣 ':'* ')+'</span><span>'+x.t+'</span></div>';}).join('');
+    sendTg('🛑 <b>NO TRADE — XAU/USD</b>\n'+blockReasons.join('\n')+'\nStrength: '+st+'% | Grade: '+q.grade, stype);
     scrollToVerdict(); return;
   }
+
   document.getElementById('blockBox').style.display='none';
-  var df=b-s, dir, st;
-  if (Math.abs(df)<6){dir=df>=0?'BUY':'SELL';st=35+Math.abs(df);}
-  else if (df>0){dir='BUY';st=Math.min(95,48+df*1.1);}
-  else{dir='SELL';st=Math.min(95,48+Math.abs(df)*1.1);}
-  st=Math.round(st);
-  // News penalty
-  if (newsDanger) { st=Math.max(20,st-25); rs.push({t:'\ud83d\uded1 HIGH IMPACT NEWS active \u2014 strength -25pts',c:'warn'}); }
-  else if (newsWarn) { st=Math.max(30,st-10); rs.push({t:'\u26a0\ufe0f High impact news approaching \u2014 strength -10pts',c:'warn'}); }
-  var slbl=st>=78?'STRONG':st>=60?'MODERATE':'WEAK';
-  var sc=st>=78?'#00c853':st>=60?'#FFD700':'#ff4444';
-  var lv=c.lvl(st), lot=parseFloat(document.getElementById('lotSize').value)||0.02;
+  var lv=calcDynamicLevels(a, st), lot=parseFloat(document.getElementById('lotSize').value)||0.02;
   var tp1,tp2,tp3,sl2;
   if (dir==='BUY'){tp1=(cur+lv.tp1).toFixed(2);tp2=(cur+lv.tp2).toFixed(2);tp3=(cur+lv.tp3).toFixed(2);sl2=(cur-lv.sl).toFixed(2);}
   else{tp1=(cur-lv.tp1).toFixed(2);tp2=(cur-lv.tp2).toFixed(2);tp3=(cur-lv.tp3).toFixed(2);sl2=(cur+lv.sl).toFixed(2);}
   var g1=gbp(lv.tp1,lot),g2=gbp(lv.tp2,lot),g3=gbp(lv.tp3,lot),gs=gbp(lv.sl,lot);
+  var slbl=q.grade+' '+q.label;
   activeSig={id:Date.now(),dir:dir,entry:cur,tp1:parseFloat(tp1),tp2:parseFloat(tp2),tp3:parseFloat(tp3),sl:parseFloat(sl2),g1:g1,g2:g2,g3:g3,gs:gs,lv:lv,lot:lot,st:st,slbl:slbl,stype:stype,style:c.name,time:new Date().toLocaleTimeString(),status:'OPEN'};
-  var em=dir==='BUY'?'\ud83d\udfe2':'\ud83d\udd34';
-  var tl=stype==='AUTO'?'\ud83d\udfe0 AUTO':'\u270b MANUAL';
-  var nNote=newsDanger?'\n\ud83d\uded1 WARNING: High impact news active \u2014 reduced strength':newsWarn?'\n\u26a0\ufe0f High impact news approaching':'';
-  sendTg(em+' <b>'+dir+' \u2014 XAU/USD GOLD</b>\n'+tl+' \u00b7 '+c.name+'\nStrength: <b>'+slbl+' ('+st+'%)</b>'+nNote+'\n\nEntry: <b>$'+cur.toFixed(2)+'</b>\n\ud83c\udfaf TP1: $'+tp1+' (+$'+lv.tp1+' = +'+P+g1+')\n\ud83d\udcb0 TP2: $'+tp2+' (+$'+lv.tp2+' = +'+P+g2+')\n\ud83d\ude80 TP3: $'+tp3+' (+$'+lv.tp3+' = +'+P+g3+')\n\ud83d\uded1 SL: $'+sl2+' (-$'+lv.sl+' = -'+P+gs+')\n\n\ud83d\udea8 SET STOP LOSS IN MT5 NOW!\nLot: '+lot+' | EMA9: $'+e9+' | RSI: '+r+'\n'+c.interval+' | '+cl.length+' bars | '+c.desc, stype);
-  // Render verdict
+  var em=dir==='BUY'?'🟢':'🔴', tl=stype==='AUTO'?'🟠 AUTO':'✋ MANUAL';
+  sendTg(em+' <b>'+dir+' — XAU/USD GOLD</b>\n'+tl+' · '+c.name+'\nGrade: <b>'+q.grade+' '+q.label+' ('+st+'%)</b>\nHTF: '+(score.mtf?score.mtf.tf+' '+score.mtf.dir:'n/a')+'\n\nEntry: <b>$'+cur.toFixed(2)+'</b>\n🎯 TP1: $'+tp1+' (+$'+lv.tp1+' = +'+P+g1+')\n💰 TP2: $'+tp2+' (+$'+lv.tp2+' = +'+P+g2+')\n🚀 TP3: $'+tp3+' (+$'+lv.tp3+' = +'+P+g3+')\n🛑 SL: $'+sl2+' (-$'+lv.sl+' = -'+P+gs+')\n\nATR-based levels · EMA50/200 filter · Multi-timeframe confirmed\n🚨 SET STOP LOSS IN MT5 NOW!', stype);
+
   var ve=document.getElementById('verdict'); ve.style.display='block'; ve.className='verdict '+(dir==='BUY'?'v-buy':'v-sell');
-  document.getElementById('vDir').textContent=dir; document.getElementById('vDir').className='vdir '+(dir==='BUY'?'vdir-buy':'vdir-sell');
-  document.getElementById('vSub').textContent=(dir==='BUY'?'Buy':'Sell')+' at $'+cur.toFixed(2)+' | '+stype+' | '+c.name+' | '+c.interval;
-  document.getElementById('vBadge').innerHTML='<span class="trend-badge '+tc.cls+'">'+tc.lbl+'</span>';
-  document.getElementById('strFill').style.cssText='width:'+st+'%;background:'+sc;
+  document.getElementById('vDir').textContent=dir+' '+q.grade; document.getElementById('vDir').className='vdir '+(dir==='BUY'?'vdir-buy':'vdir-sell');
+  document.getElementById('vSub').textContent=q.label+' at $'+cur.toFixed(2)+' | '+stype+' | '+c.name+' | '+c.interval+' with '+(score.mtf?score.mtf.tf:'HTF')+' confirmation';
+  document.getElementById('vBadge').innerHTML='<span class="trend-badge tb-ok">'+q.grade+' · '+q.label+' · ATR SL/TP</span>';
+  document.getElementById('strFill').style.cssText='width:'+st+'%;background:'+q.color;
   document.getElementById('strPct').textContent=st+'%';
-  document.getElementById('strLbl').textContent=slbl+' Signal'; document.getElementById('strLbl').style.color=sc;
-  document.getElementById('analysisList').innerHTML=rs.map(function(x){return '<div class="arow '+x.c+'"><span>'+(x.c==='pos'?'+ ':x.c==='neg'?'- ':x.c==='warn'?'\u26a0 ':x.c==='rev'?'\ud83d\udfe3 ':'* ')+'</span><span>'+x.t+'</span></div>';}).join('');
+  document.getElementById('strLbl').textContent=q.grade+' · '+q.label; document.getElementById('strLbl').style.color=q.color;
+  document.getElementById('analysisList').innerHTML=rows.map(function(x){return '<div class="arow '+x.c+'"><span>'+(x.c==='pos'?'+ ':x.c==='neg'?'- ':x.c==='warn'?'⚠ ':x.c==='rev'?'🟣 ':'* ')+'</span><span>'+x.t+'</span></div>';}).join('');
   document.getElementById('entryVal').textContent='$'+cur.toFixed(2);
   document.getElementById('tp1v').textContent='$'+tp1; document.getElementById('tp1s').textContent='+$'+lv.tp1; document.getElementById('tp1p').textContent='+'+P+g1;
   document.getElementById('tp2v').textContent='$'+tp2; document.getElementById('tp2s').textContent='+$'+lv.tp2; document.getElementById('tp2p').textContent='+'+P+g2;
   document.getElementById('tp3v').textContent='$'+tp3; document.getElementById('tp3s').textContent='+$'+lv.tp3; document.getElementById('tp3p').textContent='+'+P+g3;
   document.getElementById('slv').textContent='$'+sl2; document.getElementById('sls').textContent='-$'+lv.sl; document.getElementById('slp').textContent='-'+P+gs;
-  document.getElementById('slSub').textContent='Open MT5 \u2192 long-press trade \u2192 Modify \u2192 set SL to $'+sl2;
+  document.getElementById('slSub').textContent='Open MT5 → long-press trade → Modify → set SL to $'+sl2;
   document.getElementById('closePrice').value='';
   addLog(activeSig); renderLog(); scrollToVerdict();
-
 }
 
 function scrollToVerdict() {
@@ -942,41 +988,33 @@ function scrollToVerdict() {
 // ── GET SIGNAL ───────────────────────────────────────────
 async function getSignal() {
   if (!APIKEY) { alert('Save your API key first.'); return; }
-  // Check market is open
   if (!isGoldMarketOpen()) {
-    showErr(getMarketOpenTime());
-    setStatus(getMarketOpenTime(), '#ff4444');
-    // Show market closed in signal button
+    showErr(getMarketOpenTime()); setStatus(getMarketOpenTime(), '#ff4444');
     document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
     document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
-    document.getElementById('signalBtn').style.color = '#888';
-    return;
+    document.getElementById('signalBtn').style.color = '#888'; return;
   }
-  // Restore button style
   document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#FFD700,#cc9900)';
-  document.getElementById('signalBtn').style.color = '#000';
-  document.getElementById('signalBtnTxt').textContent = 'GET GOLD SIGNAL';
+  document.getElementById('signalBtn').style.color = '#000'; document.getElementById('signalBtnTxt').textContent = 'GET GOLD SIGNAL';
   setBusy(true); hideErr();
-  document.getElementById('verdict').style.display='none';
-  document.getElementById('blockBox').style.display='none';
-  document.getElementById('revBox').style.display='none';
+  document.getElementById('verdict').style.display='none'; document.getElementById('blockBox').style.display='none'; document.getElementById('revBox').style.display='none';
   refreshNews();
   try {
     var c=C();
-    setStatus('Fetching XAU/USD \u00b7 '+c.name+' \u00b7 '+c.interval+'...','#FFD700');
-    var data=await fetchCandles();
-    if (!data) throw new Error('No data \u2014 gold market may be closed');
-    var cl=data.map(function(x){return parseFloat(x.close);}),
-        hi=data.map(function(x){return parseFloat(x.high);}),
-        lo=data.map(function(x){return parseFloat(x.low);});
-    var cur=cl[cl.length-1];
-    if (cur<1000) throw new Error('Unexpected price ($'+cur.toFixed(2)+') \u2014 check API key');
-    updatePriceCard(cl,hi,lo,cur);
+    setStatus('Fetching XAU/USD · '+c.name+' · '+c.interval+' + higher timeframe...','#FFD700');
+    var data=await fetchCandles(Math.max(c.bars, 220));
+    if (!data) throw new Error('No data — gold market may be closed');
+    var cl=data.map(function(x){return parseFloat(x.close);}), hi=data.map(function(x){return parseFloat(x.high);}), lo=data.map(function(x){return parseFloat(x.low);});
+    var quote=await fetchLiveQuote();
+    var cur=quote ? quote.price : cl[cl.length-1];
+    if (cur<1000) throw new Error('Unexpected price ($'+cur.toFixed(2)+') — check API key');
+    updatePriceCard(cl,hi,lo,cur,quote);
+    var mtf=await getConfirmationTrend();
     var rev=detectRev(cl,hi,lo);
-    if (rev.ok) { document.getElementById('revBox').style.display='block'; document.getElementById('revSub').textContent=rev.msg; sendTg('\ud83d\udfe3 <b>REVERSAL ALERT</b>\n'+rev.msg,'MANUAL'); }
-    setStatus('Loaded '+data.length+' bars \u00b7 $'+cur.toFixed(2),'#00c853');
+    if (rev.ok) { document.getElementById('revBox').style.display='block'; document.getElementById('revSub').textContent=rev.msg; sendTg('🟣 <b>REVERSAL ALERT</b>\n'+rev.msg,'MANUAL'); }
+    setStatus('Loaded '+data.length+' bars · entry $'+cur.toFixed(2)+' · HTF '+mtf.tf+' '+mtf.dir,'#00c853');
     document.getElementById('indBar').style.display='grid';
-    buildSignal(cl,hi,lo,cur,'MANUAL');
+    await buildSignal(cl,hi,lo,cur,'MANUAL',mtf);
   } catch(e) { showErr(e.message); setStatus('Failed: '+e.message,'#ff4444'); }
   setBusy(false);
 }
@@ -988,31 +1026,31 @@ async function autoCheck() {
     setStatus(getMarketOpenTime(), '#888');
     document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
     document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
-    document.getElementById('signalBtn').style.color = '#888';
-    return;
+    document.getElementById('signalBtn').style.color = '#888'; return;
   }
   document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#FFD700,#cc9900)';
   document.getElementById('signalBtn').style.color = '#000';
   refreshNews();
   try {
-    var data=await fetchCandles(); if (!data) return;
-    var cl=data.map(function(x){return parseFloat(x.close);}),
-        hi=data.map(function(x){return parseFloat(x.high);}),
-        lo=data.map(function(x){return parseFloat(x.low);});
+    var c=C();
+    var data=await fetchCandles(Math.max(c.bars, 220)); if (!data) return;
+    var cl=data.map(function(x){return parseFloat(x.close);}), hi=data.map(function(x){return parseFloat(x.high);}), lo=data.map(function(x){return parseFloat(x.low);});
     var quote=await fetchLiveQuote();
     var cur=quote ? quote.price : cl[cl.length-1]; if (cur<1000) return;
     updatePriceCard(cl,hi,lo,cur,quote);
-    if (newsDanger) { setStatus('AUTO PAUSED \u2014 High impact news active','#ff4444'); return; }
-    var rev=detectRev(cl,hi,lo);
-    if (rev.ok) { sendTg('\ud83d\udfe3 <b>REVERSAL ALERT</b>\n'+rev.msg,'AUTO'); setStatus('REVERSAL DETECTED','#9c27b0'); return; }
-    var th=parseInt(document.getElementById('minStr').value)||60;
-    var cs=coreScore(cl,hi,lo,cur), tc=trendConfirm(cl), cf=conflict(cs.b,cs.s,tc);
-    if (cf.ok) { setStatus('Auto \u2014 BLOCKED (conflict)','#ff4444'); return; }
-    var df=cs.b-cs.s, st;
-    if (Math.abs(df)<6) st=35+Math.abs(df); else st=Math.min(95,48+Math.abs(df)*1.1); st=Math.round(st);
-    if (newsWarn) st=Math.max(30,st-10);
-    if (st>=th) { setStatus('Signal ('+st+'%) fired!','#00c853'); document.getElementById('indBar').style.display='grid'; buildSignal(cl,hi,lo,cur,'AUTO'); if(navigator.vibrate)navigator.vibrate([200,100,200]); }
-    else setStatus('Auto '+new Date().toLocaleTimeString()+' \u00b7 '+C().name+' \u00b7 '+st+'% below '+th+'%','#FFD700');
+    var mtf=await getConfirmationTrend();
+    var score=scoreDirection(cl,hi,lo,cur,mtf);
+    var th=parseInt(document.getElementById('minStr').value)||75;
+    var q=qualityGrade(score.strength);
+    if (newsDanger) { setStatus('AUTO PAUSED — High impact news active','#ff4444'); return; }
+    if (score.vol.block) { setStatus('AUTO BLOCKED — '+score.vol.text,'#ff4444'); return; }
+    if (score.mtf && score.mtf.ok && score.mtf.dir!==score.dir && score.strength<92) { setStatus('AUTO BLOCKED — HTF disagrees','#ff4444'); return; }
+    if (score.strength>=th && score.strength>=75) {
+      setStatus('A-quality signal ('+score.strength+'%) fired!','#00c853');
+      document.getElementById('indBar').style.display='grid';
+      await buildSignal(cl,hi,lo,cur,'AUTO',mtf);
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    } else setStatus('Auto '+new Date().toLocaleTimeString()+' · '+C().name+' · '+score.strength+'% '+q.grade+' below '+th+'%','#FFD700');
   } catch(e) {}
 }
 
