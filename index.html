@@ -732,6 +732,17 @@ function updateRisk() {
 }
 
 // ── FETCH ─────────────────────────────────────────────────
+var GOLDAPI_KEY = 'bfd41c399f7f525ce457dd550bb79a88-io';
+async function fetchGoldApiPrice() {
+  try {
+    var r = await fetch('https://www.goldapi.io/api/XAU/USD', {
+      headers: { 'x-access-token': GOLDAPI_KEY }
+    });
+    var d = await r.json();
+    if (d && typeof d.price === 'number' && d.price > 1000) return d.price;
+    return null;
+  } catch(e) { return null; }
+}
 async function fetchCandles(sz) {
   var c=C(); sz=sz||c.bars;
   var url='https://api.twelvedata.com/time_series?symbol=XAU/USD&interval='+c.interval+'&outputsize='+sz+'&apikey='+APIKEY;
@@ -767,11 +778,12 @@ function drawChart(data) {
 }
 
 // ── UPDATE PRICE CARD ────────────────────────────────────
-function updatePriceCard(cl, hi, lo, cur) {
+function updatePriceCard(cl, hi, lo, cur, displayPrice) {
   candleCloses=cl;
   var lh=Math.max.apply(null,hi), ll=Math.min.apply(null,lo), lo2=cl[0];
-  var pct=((cur-lo2)/lo2*100).toFixed(2), isUp=pct>=0;
-  document.getElementById('livePrice').textContent='$'+cur.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  var shown = (typeof displayPrice==='number') ? displayPrice : cur;
+  var pct=((shown-lo2)/lo2*100).toFixed(2), isUp=pct>=0;
+  document.getElementById('livePrice').textContent='$'+shown.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById('livePrice').style.color='#FFD700';
   document.getElementById('liveDot').style.background='#00c853';
   var ec=document.getElementById('livePriceChg'); ec.textContent=(isUp?'\u25b2 +':'\u25bc ')+Math.abs(pct)+'% today'; ec.className=isUp?'up':'dn';
@@ -918,7 +930,8 @@ async function getSignal() {
         lo=data.map(function(x){return parseFloat(x.low);});
     var cur=cl[cl.length-1];
     if (cur<1000) throw new Error('Unexpected price ($'+cur.toFixed(2)+') \u2014 check API key');
-    updatePriceCard(cl,hi,lo,cur);
+    var displayPrice = await fetchGoldApiPrice();
+    updatePriceCard(cl,hi,lo,cur,displayPrice);
     var rev=detectRev(cl,hi,lo);
     if (rev.ok) { document.getElementById('revBox').style.display='block'; document.getElementById('revSub').textContent=rev.msg; sendTg('\ud83d\udfe3 <b>REVERSAL ALERT</b>\n'+rev.msg,'MANUAL'); }
     setStatus('Loaded '+data.length+' bars \u00b7 $'+cur.toFixed(2),'#00c853');
@@ -947,7 +960,8 @@ async function autoCheck() {
         hi=data.map(function(x){return parseFloat(x.high);}),
         lo=data.map(function(x){return parseFloat(x.low);});
     var cur=cl[cl.length-1]; if (cur<1000) return;
-    updatePriceCard(cl,hi,lo,cur);
+    var displayPrice = await fetchGoldApiPrice();
+    updatePriceCard(cl,hi,lo,cur,displayPrice);
     if (newsDanger) { setStatus('AUTO PAUSED \u2014 High impact news active','#ff4444'); return; }
     var rev=detectRev(cl,hi,lo);
     if (rev.ok) { sendTg('\ud83d\udfe3 <b>REVERSAL ALERT</b>\n'+rev.msg,'AUTO'); setStatus('REVERSAL DETECTED','#9c27b0'); return; }
