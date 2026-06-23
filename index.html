@@ -1291,16 +1291,14 @@ function init() {
 
   // Risk
   updateRisk();
-  // Check market status on load
-  if (!isGoldMarketOpen()) {
-    document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
-    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
-    document.getElementById('signalBtn').style.color = '#888';
-    setStatus(getMarketOpenTime(), '#888');
-  }
 
   // News
   refreshNews(); newsTimer=setInterval(refreshNews,60000);
+
+  // Market status check \u2014 runs every 60s regardless of Auto mode,
+  // so the button/status updates live as the market opens/closes
+  checkMarketStatus();
+  setInterval(checkMarketStatus, 60000);
 
   // Auto restore
   if (localStorage.getItem('td_auto')==='1'&&APIKEY) {
@@ -1400,9 +1398,14 @@ function init() {
 
 
 
-// GOLD MARKET HOURS CHECK
-// Gold trades Sun 23:00 - Fri 22:00 UK time (BST)
-// Closed: Fri 22:00 - Sun 23:00
+// GOLD MARKET HOURS CHECK \u2014 Vantage Markets
+// Weekly: trades Sun 23:00 - Fri 22:00 UK time
+// Daily rollover break: ~21:00-22:00 UK every day (incl. Fri, excl. weekend)
+// NOTE: 21:00 close confirmed by user observation on Vantage 2026-06-23.
+// Reopen time is a best estimate (1hr break) \u2014 adjust DAILY_BREAK_END below
+// once confirmed against Vantage MT5.
+var DAILY_BREAK_START = 2100; // 21:00 UK
+var DAILY_BREAK_END   = 2200; // 22:00 UK \u2014 ESTIMATE, confirm with Vantage
 function isGoldMarketOpen() {
   var now = new Date();
   var day = now.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
@@ -1412,10 +1415,12 @@ function isGoldMarketOpen() {
 
   // Saturday - always closed
   if (day === 6) return false;
-  // Friday after 22:00 - closed
+  // Friday after 22:00 - closed for the weekend
   if (day === 5 && hm >= 2200) return false;
   // Sunday before 23:00 - closed
   if (day === 0 && hm < 2300) return false;
+  // Daily rollover break (every trading day, including Friday up to 21:00-22:00)
+  if (hm >= DAILY_BREAK_START && hm < DAILY_BREAK_END) return false;
 
   return true;
 }
@@ -1424,17 +1429,18 @@ function getMarketOpenTime() {
   var now = new Date();
   var day = now.getDay();
   var h = now.getHours();
-  var hm = h * 100 + now.getMinutes();
+  var mins = now.getMinutes();
+  var hm = h * 100 + mins;
 
   if (day === 6) {
     // Saturday - opens Sunday 23:00
-    var diff = ((24 - h) * 60 - now.getMinutes()) + (23 * 60); // mins to Sun 23:00
+    var diff = ((24 - h) * 60 - mins) + (23 * 60); // mins to Sun 23:00
     var hrs = Math.floor(diff / 60);
-    var mins = diff % 60;
-    return 'Market closed. Opens Sunday at 23:00 UK (' + hrs + 'hr ' + mins + 'min)';
+    var minsR = diff % 60;
+    return 'Market closed. Opens Sunday at 23:00 UK (' + hrs + 'hr ' + minsR + 'min)';
   }
   if (day === 0 && hm < 2300) {
-    var minsLeft = (23 * 60) - (h * 60 + now.getMinutes());
+    var minsLeft = (23 * 60) - (h * 60 + mins);
     var hrs2 = Math.floor(minsLeft / 60);
     var mins2 = minsLeft % 60;
     return 'Market closed. Opens tonight at 23:00 UK (' + hrs2 + 'hr ' + mins2 + 'min)';
@@ -1442,7 +1448,34 @@ function getMarketOpenTime() {
   if (day === 5 && hm >= 2200) {
     return 'Market closed for the weekend. Opens Sunday at 23:00 UK';
   }
+  // Daily rollover break
+  if (hm >= DAILY_BREAK_START && hm < DAILY_BREAK_END) {
+    var breakEndH = Math.floor(DAILY_BREAK_END / 100), breakEndM = DAILY_BREAK_END % 100;
+    var minsToReopen = (breakEndH * 60 + breakEndM) - (h * 60 + mins);
+    return 'Daily rollover break \u2014 reopens ~' + String(breakEndH).padStart(2,'0') + ':' + String(breakEndM).padStart(2,'0') + ' UK (' + minsToReopen + 'min, estimate \u2014 confirm vs MT5)';
+  }
   return 'Market is open';
+}
+
+// Runs on a 60s timer independent of Auto mode, so the button/status
+// reflect market open/closed in real time even if you just leave the
+// app open across the Fri 22:00 close or Sun 23:00 open boundary.
+var marketWasOpen = null;
+function checkMarketStatus() {
+  var open = isGoldMarketOpen();
+  if (open === marketWasOpen) return; // no change, skip DOM churn
+  marketWasOpen = open;
+  if (!open) {
+    document.getElementById('signalBtnTxt').textContent = 'MARKET CLOSED';
+    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#333,#1a1a1a)';
+    document.getElementById('signalBtn').style.color = '#888';
+    setStatus(getMarketOpenTime(), '#888');
+  } else {
+    document.getElementById('signalBtnTxt').textContent = 'GET GOLD SIGNAL';
+    document.getElementById('signalBtn').style.background = 'linear-gradient(135deg,#FFD700,#cc9900)';
+    document.getElementById('signalBtn').style.color = '#000';
+    setStatus('Market open \u2014 tap Get Signal','#00c853');
+  }
 }
 
 window.onload = init;
